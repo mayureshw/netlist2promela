@@ -1,0 +1,27 @@
+{
+
+"env" : {
+    "metatype" : "env"
+    },
+
+"mullerc" : {
+    "metatype" : "basicgate"
+    },
+
+"xor" : {
+    "metatype" : "basicgate"
+    },
+
+"not" : {
+    "nInp"     : 1,
+    "metatype" : "basicgate"
+    },
+
+"latch" : {
+    "nInp" : 2,
+    "nOp"  : 1,
+    "inps" : [ "d", "g" ],
+    "ops"  : [ "q" ]
+    }
+
+}

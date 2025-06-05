@@ -1,0 +1,22 @@
+ifndef NL2PMLDIR
+$(error Please set environment variable NL2PMLDIR to point to netlist2pnml directory)
+endif
+
+ifndef NLFILES
+$(error Please set variable NLFILES listing json files to generate pml)
+endif
+
+NL2PML	=	$(NL2PMLDIR)/nl2pml.pmlt
+MODELS	=	$(NLFILES:.json=)
+PMLFILES=	$(foreach m,$(MODELS),$(m)/$(m).pml)
+
+define pmlrule
+$1/$1.pml:	$1.json
+	mkdir -p $1
+	expander.py --eval="modelfile='"$1.json"'" --eval="opfile='"$1/$1.pml"'" $(NL2PML)
+
+endef
+
+all:	$(PMLFILES)
+
+$(foreach m,$(MODELS),$(eval $(call pmlrule,$m)))

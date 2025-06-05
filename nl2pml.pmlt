@@ -1,0 +1,5 @@
+$py(
+import sys
+sys.stdout = open( opfile, 'w' )
+)\
+Dummy text to test flow

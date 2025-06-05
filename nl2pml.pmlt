@@ -1,5 +1,19 @@
 $py(
 import sys
+import os
+from gates import Gates
+from netlist import Netlist
 sys.stdout = open( opfile, 'w' )
+nl2pmldir = os.environ['NL2PMLDIR']
+gates = Gates( nl2pmldir + '/gates.json' )
+nl = Netlist(modelfile)
+behavpml = nl2pmldir + '/behav.pml'
 )\
-Dummy text to test flow
+#define N_STATES $(nl.nStates())
+$for( g,cnt in nl.gateCounts().items() )\
+#define N_$(g) $(cnt)
+$endfor\
+mtype = { $(', '.join(nl.instNames())) };
+
+$include(behavpml)
+

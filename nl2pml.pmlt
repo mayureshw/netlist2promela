@@ -64,6 +64,7 @@ inline initInsts() {
 $for(inst in nl.nonEnvInsts())\
     // $(inst.name)
     c_initInst[$(inst.id)]!m_gatetype,$(inst.typ)
+    c_initInst[$(inst.id)]!m_initover,0
 $endfor\
 }
 

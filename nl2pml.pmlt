@@ -6,14 +6,28 @@ from netlist import Netlist
 sys.stdout = open( opfile, 'w' )
 nl2pmldir = os.environ['NL2PMLDIR']
 gates = Gates( nl2pmldir + '/gates.json' )
-nl = Netlist(modelfile)
+nl = Netlist(modelfile,gatesjson)
 behavpml = nl2pmldir + '/behav.pml'
 )\
 #define N_STATES $(nl.nStates())
-$for( g,cnt in nl.gateCounts().items() )\
-#define N_$(g) $(cnt)
+#define N_INSTS $(nl.nInsts())
+
+inline printInstName(id) {
+    if
+$for(i,n in enumerate(nl.instNames()))\
+    :: id == $(i) -> printf("$(n)")
 $endfor\
-mtype = { $(', '.join(nl.instNames())) };
+    :: else -> printf("Uknown inst id",id)
+    fi
+}
+
+inline printGateType(id) {
+    if
+$for(i,n in enumerate(nl.instNames()))\
+    :: id == $(i) -> printf("$(n)")
+$endfor\
+    :: else -> printf("Uknown gate id",id)
+    fi
+}
 
 $include(behavpml)
-

@@ -1,15 +1,31 @@
-byte state[N_STATES];
-bool blocker[N_STATES];
-bool driver[N_STATES];
+byte states[N_STATES]   // 0,1: given state, 2: uninitialized
+bool blockers[N_STATES] // 0: not blocked, 1: blocked
 
+proctype gate(int id) {
+    skip
+}
 
-init {
+inline initStates() {
     int i = 0;
     do
-    :: i < N_STATES -> 
-        state[i] = 2; // 2 means undefined
-        blocker[i] = 0;
+    :: i < N_STATES ->
+        states[i] = 2
+        blockers[i] = 0
         i++
     :: else -> break
     od
+}
+
+inline initInsts() {
+    int i = 0;
+    do
+    :: i < N_INSTS ->
+        run gate(i)
+    :: else -> break
+    od
+}
+
+init {
+    initStates()
+    initInsts()
 }

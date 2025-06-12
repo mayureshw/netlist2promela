@@ -10,6 +10,7 @@ export  PYTHONPATH	:=	$(NL2PMLDIR):$(PYTHONPATH)
 
 
 NL2PML		=	$(NL2PMLDIR)/nl2pml.pmlt
+GATESJSON	=	$(NL2PMLDIR)/gates.json
 MODELS		=	$(NLFILES:.json=)
 PMLFILES	=	$(foreach m,$(MODELS),$(m)/$(m).pml)
 CFILES		=	$(foreach m,$(MODELS),$(m)/pan.c)
@@ -19,7 +20,7 @@ REPORTFILES	=	$(foreach m,$(MODELS),$(m)/$(m).report)
 define pmlrule
 $1/$1.pml:	$1.json
 	mkdir -p $1
-	expander.py --eval="modelfile='"$1.json"'" --eval="opfile='"$1/$1.pml"'" $(NL2PML)
+	expander.py --eval="modelfile='"$1.json"'" --eval="opfile='"$1/$1.pml"'" --eval="gatesjson='"$(GATESJSON)"'" $(NL2PML)
 
 $1/pan.c:	$1/$1.pml
 	cd $1 && spin -a $1.pml

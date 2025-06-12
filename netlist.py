@@ -1,5 +1,6 @@
 import json
 from collections import Counter
+from gates import Gates
 
 class Pin:
     cnt = 0
@@ -48,12 +49,14 @@ class Instance:
 class Netlist:
     stdinsts = [ 'env' ]
     def nStates(self): return Pin.cnt
+    def nInsts(self): return len(self.instNames())
     def instNames(self): return self._instnames
     def gateCounts(self): return Counter( self.insts.values() )
     def getInst(self,name): return self._insts[name]
-    def __init__(self,nljson):
+    def __init__(self,nljson,gatesjson):
         nlspec = json.load( open(nljson) )
         self.__dict__.update(nlspec)
         self._instnames =  self.stdinsts + sorted(self.insts.keys())
         self._insts = { n:Instance(n,self.insts.get(n,None)) for n in self._instnames }
         self._wires = { i : Wire(i,o,self) for i,o in self.wires.items() }
+        self.gates = Gates(gatesjson)

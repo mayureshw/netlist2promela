@@ -1,7 +1,7 @@
 import json
 
 class Gates:
-    msgtypes = { 'm_setinp', 'm_setop', 'm_initover' }
+    msgtypes = { 'm_setinp', 'm_setop', 'm_initover', 'm_gatetype' }
     def gateid(self,n): self.gateids[n]
     def __init__(self,gatesjson):
         gatespec = json.load( open(gatesjson) )

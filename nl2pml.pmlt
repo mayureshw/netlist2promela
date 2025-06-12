@@ -55,16 +55,21 @@ $endfor\
 
 inline initWires() {
 $for(w in nl._wires.values())\
-    // $(w.i.fullName()) $(w.o.fullName())
-    run wire($(w.i.id),$(w.o.id))
+    run wire($(w.i.id),$(w.o.id)) // $(w.i.fullName()) $(w.o.fullName())
 $endfor\
 }
 
 inline initInsts() {
 $for(inst in nl.nonEnvInsts())\
-    // $(inst.name)
-    c_initInst[$(inst.id)]!m_gatetype,$(inst.typ)
-    c_initInst[$(inst.id)]!m_initover,0
+    // initialize $(inst.name)
+    c_initInst[$(inst.name)]!m_gatetype,$(inst.typ)
+$for(p in inst.sortedIpins())\
+    c_initInst[$(inst.name)]!m_setinp,$(p.id) // $(p.fullName())
+$endfor\
+$for(p in inst.sortedOpins())\
+    c_initInst[$(inst.name)]!m_setop,$(p.id) // $(p.fullName())
+$endfor\
+    c_initInst[$(inst.name)]!m_initover,0
 $endfor\
 }
 

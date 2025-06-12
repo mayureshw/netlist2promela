@@ -33,6 +33,8 @@ class Instance:
             print('Attempt to register same pin again',self.name,pinname,direction)
             sys.exit(1)
         pinstore[pinname] = pinobj
+    def sortedIpins(self): return sorted(self.ipins.values(),key=lambda p:p.name)
+    def sortedOpins(self): return sorted(self.opins.values(),key=lambda p:p.name)
     def __init__(self,name,typ):
         self.name = name
         self.id = Instance.cnt

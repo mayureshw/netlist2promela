@@ -1,23 +1,23 @@
 {
 
-"env" : {
+"g_env" : {
     "metatype" : "env"
     },
 
-"mullerc" : {
+"g_mullerc" : {
     "metatype" : "basicgate"
     },
 
-"xor" : {
+"g_xor" : {
     "metatype" : "basicgate"
     },
 
-"not" : {
+"g_not" : {
     "nInp"     : 1,
     "metatype" : "basicgate"
     },
 
-"latch" : {
+"g_latch" : {
     "nInp" : 2,
     "nOp"  : 1,
     "inps" : [ "d", "g" ],

@@ -11,6 +11,8 @@ behavpml = nl2pmldir + '/behav.pml'
 )\
 #define N_STATES $(nl.nStates())
 #define N_INSTS $(nl.nInsts())
+#define MAX_INPS $(nl.maxInps())
+#define MAX_OPS $(nl.maxOps())
 
 inline printInstName(id) {
     if
@@ -23,11 +25,34 @@ $endfor\
 
 inline printGateType(id) {
     if
-$for(i,n in enumerate(nl.instNames()))\
+$for(n,i in nl.gates.gateids.items())\
     :: id == $(i) -> printf("$(n)")
 $endfor\
     :: else -> printf("Uknown gate id",id)
     fi
+}
+
+inline printMsgType(id) {
+    if
+$for(n,i in nl.gates.msgids.items())\
+    :: id == $(i) -> printf("$(n)")
+$endfor\
+    :: else -> printf("Uknown msgtype",id)
+    fi
+}
+
+inline initWires() {
+$for(w in nl._wires.values())\
+    // $(w.i.fullName()) $(w.o.fullName())
+    run wire($(w.i.id),$(w.o.id))
+$endfor\
+}
+
+inline initInsts() {
+$for(inst in nl.nonEnvInsts())\
+    // $(inst.name)
+    c_initInst[$(inst.id)]!0,0
+$endfor\
 }
 
 $include(behavpml)

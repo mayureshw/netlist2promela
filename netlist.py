@@ -11,9 +11,10 @@ class Pin:
         pinst = Pin(name,direction,nl)
         cls.pins[name] = pinst
         return pinst
+    def fullName(self): return '.'.join([self.instname,self.name])
     def __init__(self,name,direction,nl):
-        instname,self.name = name.split('.')
-        inst = nl.getInst(instname)
+        self.instname,self.name = name.split('.')
+        inst = nl.getInst(self.instname)
         inst.registerPin(self.name,direction,self)
         self.id = Pin.cnt
         Pin.cnt = Pin.cnt + 1
@@ -39,7 +40,7 @@ class Instance:
         gateinstlist = Instance.gateinsts.get(typ,[])
         self.gateinstid = len(gateinstlist)
         gateinstlist.append(self)
-        self.typ = 'env' if name == 'env' else typ
+        self.typ = 'g_env' if name == 'i_env' else typ
         if self.typ == None :
             print('Could not set inst typ',name,typ)
             sys.exit(1)
@@ -47,12 +48,15 @@ class Instance:
         self.opins = {}
 
 class Netlist:
-    stdinsts = [ 'env' ]
+    stdinsts = [ 'i_env' ]
     def nStates(self): return Pin.cnt
     def nInsts(self): return len(self.instNames())
     def instNames(self): return self._instnames
     def gateCounts(self): return Counter( self.insts.values() )
     def getInst(self,name): return self._insts[name]
+    def maxInps(self): return max( len(inst.ipins) for inst in self._insts.values() )
+    def maxOps(self): return max( len(inst.opins) for inst in self._insts.values() )
+    def nonEnvInsts(self): return [ inst for inst in self._insts.values() if inst.name != 'i_env']
     def __init__(self,nljson,gatesjson):
         nlspec = json.load( open(nljson) )
         self.__dict__.update(nlspec)

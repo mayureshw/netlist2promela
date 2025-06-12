@@ -1,8 +1,14 @@
 byte states[N_STATES]   // 0,1: given state, 2: uninitialized
 bool blockers[N_STATES] // 0: not blocked, 1: blocked
+chan c_initInst[N_INSTS] = [0] of { int, int }
 
-proctype gate(int id) {
-    skip
+proctype gate( int id ) {
+    int inpIds[MAX_INPS]
+    int opIds[MAX_OPS]
+}
+
+proctype wire( int from, to ) {
+    skip;
 }
 
 inline initStates() {
@@ -16,7 +22,7 @@ inline initStates() {
     od
 }
 
-inline initInsts() {
+inline createInsts() {
     int i = 0;
     do
     :: i < N_INSTS ->
@@ -27,5 +33,7 @@ inline initInsts() {
 
 init {
     initStates()
+    createInsts()
+    initWires()
     initInsts()
 }

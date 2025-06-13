@@ -17,6 +17,8 @@ CFILES		=	$(foreach m,$(MODELS),$(m)/pan.c)
 EXEFILES	=	$(foreach m,$(MODELS),$(m)/$(m).pan.out)
 REPORTFILES	=	$(foreach m,$(MODELS),$(m)/$(m).report)
 
+CFLAGS	= -O3 -DVECTORSZ=8192
+
 define pmlrule
 $1/$1.pml:	$1.json
 	mkdir -p $1
@@ -26,7 +28,7 @@ $1/pan.c:	$1/$1.pml
 	cd $1 && spin -a $1.pml
 
 $1/$1.pan.out:	$1/pan.c
-	cc -o $1/$1.pan.out $1/pan.c
+	cc $(CFLAGS) -o $1/$1.pan.out $1/pan.c
 
 $1/$1.report:	$1/$1.pan.out
 	$1/$1.pan.out > $1/$1.report

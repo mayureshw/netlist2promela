@@ -7,10 +7,10 @@ inline initGate() {
     :: c_initInst[id] ? msg,dat ->
         if
         :: msg == m_gatetype -> gatetyp = dat
-        :: msg == m_setop ->
+        :: msg == m_setinp ->
             inpIds[inpcnt] = dat
             inpcnt++
-        :: msg == m_setinp ->
+        :: msg == m_setop ->
             opIds[opcnt] = dat
             opcnt++
         :: msg == m_initover -> break

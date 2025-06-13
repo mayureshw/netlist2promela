@@ -92,6 +92,7 @@ inline createInsts() {
     do
     :: i < N_INSTS ->
         run gate(i)
+        i++
     :: else -> break
     od
 }

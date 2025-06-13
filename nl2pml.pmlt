@@ -31,7 +31,9 @@ inline printInstName(id) {
 $for(n in nl.instNames())\
     :: id == $(n) -> printf("$(n)")
 $endfor\
-    :: else -> printf("Uknown inst id",id)
+    :: else ->
+        printf("Uknown inst id",id)
+        assert(0)
     fi
 }
 
@@ -40,7 +42,9 @@ inline printGateType(id) {
 $for(n in nl.gates.gateids)\
     :: id == $(n) -> printf("$(n)")
 $endfor\
-    :: else -> printf("Uknown gate id",id)
+    :: else ->
+        printf("Uknown gate id",id)
+        assert(0)
     fi
 }
 
@@ -49,7 +53,9 @@ inline printMsgType(id) {
 $for(n in nl.gates.msgids)\
     :: id == $(n) -> printf("$(n)")
 $endfor\
-    :: else -> printf("Uknown msgtype",id)
+    :: else ->
+        printf("Uknown msgtype",id)
+        assert(0)
     fi
 }
 

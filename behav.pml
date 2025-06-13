@@ -30,10 +30,13 @@ inline initGate() {
 // inpcnt restrictions may be relaxed in future
 inline validateGate()
 {
+    printf("Validating inst ")
+    printInstName(id)
+    printf("\n")
     if
     :: gatetyp == g_env -> skip
     :: gatetyp == g_latch ->
-        assert( inpcnt == 3 )
+        assert( inpcnt == 2 )
         assert( opcnt == 1 )
     :: gatetyp == g_mullerc ->
         assert( inpcnt == 2 )

@@ -1,5 +1,5 @@
-bool state[N_STATES]   // 0,1: given state, 2: uninitialized
-bool blocker[N_STATES] // 0: not blocked, 1: blocked
+bool state[N_STATES]
+bool blocker[N_STATES]
 
 
 proctype wire( byte from, to )

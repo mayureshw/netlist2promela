@@ -27,19 +27,5 @@ $for(p in nl.pins())\
 $endfor\
 }
 
-inline initInsts() {
-$for(inst in nl.nonEnvInsts())\
-    // initialize $(inst.name)
-    c_initInst[$(inst.name)]!m_gatetype,$(inst.typ)
-$for(p in inst.sortedIpins())\
-    c_initInst[$(inst.name)]!m_setinp,$(p.fullName())
-$endfor\
-$for(p in inst.sortedOpins())\
-    c_initInst[$(inst.name)]!m_setop,$(p.fullName())
-$endfor\
-    c_initInst[$(inst.name)]!m_initover,0
-$endfor\
-}
-
 $include(userpml)
 $include(behavpml)

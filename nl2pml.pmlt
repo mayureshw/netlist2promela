@@ -38,5 +38,11 @@ $for(p in nl.pins())\
 $endfor\
 }
 
+inline dumpStates() {
+$for(p in nl.pins())\
+    printf("$(p.fullName())=%d\n",$(p.fullName()))
+$endfor\
+}
+
 $include(userpml)
 $include(behavpml)

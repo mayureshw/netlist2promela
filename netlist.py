@@ -11,7 +11,7 @@ class Pin:
         pinst = Pin(name,direction,nl)
         cls.pins[name] = pinst
         return pinst
-    def fullName(self): return '.'.join([self.instname,self.name])
+    def fullName(self): return '_'.join([self.instname,self.name])
     def __init__(self,name,direction,nl):
         self.instname,self.name = name.split('.')
         inst = nl.getInst(self.instname)
@@ -59,6 +59,7 @@ class Netlist:
     def maxInps(self): return max( len(inst.ipins) for inst in self._insts.values() )
     def maxOps(self): return max( len(inst.opins) for inst in self._insts.values() )
     def nonEnvInsts(self): return [ inst for inst in self._insts.values() if inst.name != 'i_env']
+    def pins(self): return Pin.pins.values()
     def __init__(self,nljson,gatesjson):
         nlspec = json.load( open(nljson) )
         self.__dict__.update(nlspec)

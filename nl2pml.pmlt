@@ -14,6 +14,10 @@ behavpml = nl2pmldir + '/behav.pml'
 #define MAX_INPS $(nl.maxInps())
 #define MAX_OPS $(nl.maxOps())
 
+$for(p in nl.pins())\
+#define $(p.fullName()) $(p.id)
+$endfor\
+
 $for(n,i in nl.gates.gateids.items())\
 #define $(n) $(i)
 $endfor\
@@ -25,6 +29,17 @@ $endfor\
 $for(n,inst in nl._insts.items())\
 #define $(n) $(inst.id)
 $endfor\
+
+inline printPinName(id) {
+    if
+$for(p in nl.pins())\
+    :: id == $(p.id) -> printf("$(p.fullName())")
+$endfor\
+    :: else ->
+        printf("Uknown pin id",id)
+        assert(0)
+    fi
+}
 
 inline printInstName(id) {
     if
@@ -61,7 +76,7 @@ $endfor\
 
 inline initWires() {
 $for(w in nl._wires.values())\
-    run wire($(w.i.id),$(w.o.id)) // $(w.i.fullName()) $(w.o.fullName())
+    run wire( $(w.i.fullName()), $(w.o.fullName()) )
 $endfor\
 }
 
@@ -70,10 +85,10 @@ $for(inst in nl.nonEnvInsts())\
     // initialize $(inst.name)
     c_initInst[$(inst.name)]!m_gatetype,$(inst.typ)
 $for(p in inst.sortedIpins())\
-    c_initInst[$(inst.name)]!m_setinp,$(p.id) // $(p.fullName())
+    c_initInst[$(inst.name)]!m_setinp,$(p.fullName())
 $endfor\
 $for(p in inst.sortedOpins())\
-    c_initInst[$(inst.name)]!m_setop,$(p.id) // $(p.fullName())
+    c_initInst[$(inst.name)]!m_setop,$(p.fullName())
 $endfor\
     c_initInst[$(inst.name)]!m_initover,0
 $endfor\

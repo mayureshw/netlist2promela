@@ -17,6 +17,7 @@ CFILES		=	$(foreach m,$(MODELS),$(m)/pan.c)
 EXEFILES	=	$(foreach m,$(MODELS),$(m)/$(m).pan.out)
 REPORTFILES	=	$(foreach m,$(MODELS),$(m)/$(m).report)
 
+MAXDEPTH=	20000
 CFLAGS	= -O3 -DVECTORSZ=8192 -DPRINTF
 
 define pmlrule
@@ -31,7 +32,7 @@ $1/$1.pan.out:	$1/pan.c
 	cc $(CFLAGS) -o $1/$1.pan.out $1/pan.c
 
 $1/$1.report:	$1/$1.pan.out
-	$1/$1.pan.out > $1/$1.report
+	$1/$1.pan.out -m$(MAXDEPTH) | tee $1/$1.report
 
 endef
 

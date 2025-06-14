@@ -171,4 +171,6 @@ init
     createInsts()
     initWires() // generated
     initInsts() // generated
+    setInp() // user supplied
+    verify() // user supplied
 }

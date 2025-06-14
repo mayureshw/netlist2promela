@@ -20,9 +20,9 @@ REPORTFILES	=	$(foreach m,$(MODELS),$(m)/$(m).report)
 CFLAGS	= -O3 -DVECTORSZ=8192 -DPRINTF
 
 define pmlrule
-$1/$1.pml:	$1.json
+$1/$1.pml:	$1.json $1.pml
 	mkdir -p $1
-	expander.py --eval="modelfile='"$1.json"'" --eval="opfile='"$1/$1.pml"'" --eval="gatesjson='"$(GATESJSON)"'" $(NL2PML)
+	expander.py --eval="modelfile='"$1.json"'" --eval="opfile='"$1/$1.pml"'" --eval="gatesjson='"$(GATESJSON)"'" --eval="userpml='"$1.pml"'" $(NL2PML)
 
 $1/pan.c:	$1/$1.pml
 	cd $1 && spin -a $1.pml

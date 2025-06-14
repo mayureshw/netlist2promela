@@ -79,4 +79,5 @@ $endfor\
 $endfor\
 }
 
+$include(userpml)
 $include(behavpml)

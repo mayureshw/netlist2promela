@@ -61,22 +61,52 @@ inline waitTillInpChange()
     skip
 }
 
+// mind 3 valued logic (2:uninitialized) in gate implementation
 inline computeOp()
 {
+    byte i0 = state[inpIds[0]]
+    byte i1 = state[inpIds[1]]
+    byte o = state[opIds[0]]
     if
     :: gatetyp == g_env -> skip
     :: gatetyp == g_latch ->
-        skip
+        if
+        :: i0 == 2 || i1 == 2 -> o = 0
+        :: else
+            if
+            :: i1 == 1 -> o = i0
+            :: else -> skip
+            fi
+        fi
     :: gatetyp == g_mullerc ->
-        skip
+        if
+        :: i0 == 2 || i1 == 2 -> o = 0
+        :: else
+            if
+            :: i0 == i1 -> o = i0
+            :: else -> skip
+            fi
+        fi
     :: gatetyp == g_not ->
-        skip
+        if
+        :: i0 == 0 -> o = 1
+        :: i0 == 1 -> o = 0
+        :: else -> skip
+        fi
     :: gatetyp == g_xor ->
-        skip
+        if
+        :: i0 == 2 || i1 == 2 -> skip
+        :: else
+            if
+            :: i0 == i1 -> o = 0
+            :: else -> o = 1
+            fi
+        fi
     :: else ->
         printf("Uknown gate type",gatetyp)
         assert(0)
     fi
+    state[opIds[0]] = o
 }
 
 proctype gate( byte id )

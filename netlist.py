@@ -1,3 +1,4 @@
+import sys
 import json
 from collections import Counter
 from gates import Gates
@@ -60,6 +61,15 @@ class Netlist:
     def maxOps(self): return max( len(inst.opins) for inst in self._insts.values() )
     def nonEnvInsts(self): return [ inst for inst in self._insts.values() if inst.name != 'i_env']
     def pins(self): return Pin.pins.values()
+    def validateAndSetInit(self):
+        for n,p in Pin.pins.items():
+            if n not in self.init:
+                print('No init value for pin',n,file=sys.stderr)
+            else:
+                p.init = self.init[n]
+        for p in self.init:
+            if p not in Pin.pins:
+                print('Unknown pin in init spec',p,file=sys.stderr)
     def __init__(self,nljson,gatesjson):
         nlspec = json.load( open(nljson) )
         self.__dict__.update(nlspec)
@@ -67,3 +77,4 @@ class Netlist:
         self._insts = { n:Instance(n,self.insts.get(n,None)) for n in self._instnames }
         self._wires = { i : Wire(i,o,self) for i,o in self.wires.items() }
         self.gates = Gates(gatesjson)
+        self.validateAndSetInit()

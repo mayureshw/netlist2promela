@@ -1,0 +1,98 @@
+$py(
+import sys
+import os
+from gates import Gates
+from netlist import Netlist
+sys.stdout = open( opfile, 'w' )
+nl2pmldir = os.environ['NL2PMLDIR']
+gates = Gates( nl2pmldir + '/gates.json' )
+nl = Netlist(modelfile,gatesjson)
+behavpml = nl2pmldir + '/behav.pml'
+)\
+#define N_STATES $(nl.nStates())
+#define N_INSTS $(nl.nInsts())
+#define MAX_INPS $(nl.maxInps())
+#define MAX_OPS $(nl.maxOps())
+
+$for(p in nl.pins())\
+#define $(p.fullName()) $(p.id)
+$endfor\
+
+$for(n,i in nl.gates.gateids.items())\
+#define $(n) $(i)
+$endfor\
+
+$for(n,i in nl.gates.msgids.items())\
+#define $(n) $(i)
+$endfor\
+
+$for(n,inst in nl._insts.items())\
+#define $(n) $(inst.id)
+$endfor\
+
+inline printPinName(id) {
+    if
+$for(p in nl.pins())\
+    :: id == $(p.id) -> printf("$(p.fullName())")
+$endfor\
+    :: else ->
+        printf("Uknown pin id",id)
+        assert(0)
+    fi
+}
+
+inline printInstName(id) {
+    if
+$for(n in nl.instNames())\
+    :: id == $(n) -> printf("$(n)")
+$endfor\
+    :: else ->
+        printf("Uknown inst id",id)
+        assert(0)
+    fi
+}
+
+inline printGateType(id) {
+    if
+$for(n in nl.gates.gateids)\
+    :: id == $(n) -> printf("$(n)")
+$endfor\
+    :: else ->
+        printf("Uknown gate id",id)
+        assert(0)
+    fi
+}
+
+inline printMsgType(id) {
+    if
+$for(n in nl.gates.msgids)\
+    :: id == $(n) -> printf("$(n)")
+$endfor\
+    :: else ->
+        printf("Uknown msgtype",id)
+        assert(0)
+    fi
+}
+
+inline initWires() {
+$for(w in nl._wires.values())\
+    run wire( $(w.i.fullName()), $(w.o.fullName()) )
+$endfor\
+}
+
+inline initInsts() {
+$for(inst in nl.nonEnvInsts())\
+    // initialize $(inst.name)
+    c_initInst[$(inst.name)]!m_gatetype,$(inst.typ)
+$for(p in inst.sortedIpins())\
+    c_initInst[$(inst.name)]!m_setinp,$(p.fullName())
+$endfor\
+$for(p in inst.sortedOpins())\
+    c_initInst[$(inst.name)]!m_setop,$(p.fullName())
+$endfor\
+    c_initInst[$(inst.name)]!m_initover,0
+$endfor\
+}
+
+$include(userpml)
+$include(behavpml)

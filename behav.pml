@@ -1,6 +1,3 @@
-bool state[N_STATES]
-bool blocker[N_STATES]
-
 proctype g_latch_2_1( byte d, g, q )
 {
     bool last_d = state[d]
@@ -61,7 +58,7 @@ proctype g_xor_2_1( byte i0, i1, o )
     od
 }
 
-proctype wire( byte from, to )
+proctype wire( byte to, from )
 {
     assert( state[from] == state[to] )
     bool last = state[from]
@@ -82,6 +79,6 @@ init
         initWires() // generated
         createInsts() // generated
     }
+    run verify() // user supplied
     setInp() // user supplied
-    verify() // user supplied
 }

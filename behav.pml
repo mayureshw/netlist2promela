@@ -1,71 +1,79 @@
-proctype g_latch_2_1( byte d, g, q )
+proctype g_latch_2_1( byte d, d_init, g, g_init, q, q_init )
 {
-    bool last_d = state[d]
-    bool last_g = state[g]
-    assert( last_g == 0 || last_d == state[q] )
+    assert( g_init == 0 || d_init == q_init )
+    bool last_d = d_init
+    bool last_g = g_init
     do
     :: state[d] != last_d || state[g] != last_g ->
-        if
-        :: state[g] -> state[q] = state[d]
-        :: else -> skip
-        fi
-        last_d = state[d]
-        last_g = state[g]
+        atomic {
+            if
+            :: state[g] -> state[q] = state[d]
+            :: else -> skip
+            fi
+            last_d = state[d]
+            last_g = state[g]
+        }
     :: else -> skip
     od
 }
 
-proctype g_not_1_1( byte i, o )
+proctype g_not_1_1( byte i, i_init, o, o_init )
 {
-    bool last_i = state[i]
-    assert( last_i != state[o] )
+    assert( i_init != o_init )
+    bool last_i = i_init
     do
     :: state[i] != last_i ->
-        state[o] = last_i
-        last_i = state[i]
-    :: else -> skip
-    od
-}
-
-proctype g_mullerc_2_1( byte i0, i1, o )
-{
-    bool last_i0 = state[i0]
-    bool last_i1 = state[i1]
-    assert( last_i0 && last_i1 || !state[o] )
-    do
-    :: state[i0] != last_i0 || state[i1] != last_i1 ->
-        if
-        :: state[i0] == state[i1] -> state[o] = state[i0]
-        :: else -> skip
-        fi
-        last_i0 = state[i0]
-        last_i1 = state[i1]
-    :: else -> skip
-    od
-}
-
-proctype g_xor_2_1( byte i0, i1, o )
-{
-    bool last_i0 = state[i0]
-    bool last_i1 = state[i1]
-    assert( state[o] == last_i0 ^ last_i1 )
-    do
-    :: state[i0] != last_i0 || state[i1] != last_i1 ->
-        state[o] = state[i0] ^ state[i1]
-        last_i0 = state[i0]
-        last_i1 = state[i1]
-    :: else -> skip
-    od
-}
-
-proctype wire( byte to, from )
-{
-    assert( state[from] == state[to] )
-    bool last = state[from]
-    do
-    :: state[from] != last ->
         atomic {
-            last = state[from]
+            state[o] = last_i
+            last_i = state[i]
+        }
+    :: else -> skip
+    od
+}
+
+proctype g_mullerc_2_1( byte i0, i0_init, i1, i1_init, o, o_init )
+{
+    assert( i0_init && i1_init || !o_init )
+    bool last_i0 = i0_init
+    bool last_i1 = i1_init
+    do
+    :: state[i0] != last_i0 || state[i1] != last_i1 ->
+        atomic {
+            if
+            :: state[i0] == state[i1] -> state[o] = state[i0]
+            :: else -> skip
+            fi
+            last_i0 = state[i0]
+            last_i1 = state[i1]
+        }
+    :: else -> skip
+    od
+}
+
+proctype g_xor_2_1( byte i0, i0_init, i1, i1_init, o, o_init )
+{
+    assert( o_init == i0_init ^ i1_init )
+    bool last_i0 = i0_init
+    bool last_i1 = i1_init
+    do
+    :: state[i0] != last_i0 || state[i1] != last_i1 ->
+        atomic {
+            state[o] = state[i0] ^ state[i1]
+            last_i0 = state[i0]
+            last_i1 = state[i1]
+        }
+    :: else -> skip
+    od
+}
+
+proctype wire( byte to, to_init, from, from_init )
+{
+    assert( to_init == from_init )
+    bool last_from = from_init
+    do
+    :: state[from] != last_from ->
+        atomic {
+            last_from = state[from]
             state[to] = state[from]
         }
     :: else -> skip
@@ -78,7 +86,7 @@ init
         initStates() // generated
         initWires() // generated
         createInsts() // generated
+        setInp() // user supplied
     }
     run verify() // user supplied
-    setInp() // user supplied
 }

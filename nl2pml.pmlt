@@ -28,7 +28,7 @@ $endfor\
 
 inline initWires() {
 $for(w in nl._wires.values())\
-    run wire( $(w.i.fullName()), $(w.o.fullName()) )
+    run wire( $(w.i.fullName()), state[$(w.i.fullName())], $(w.o.fullName()), state[$(w.o.fullName())] )
 $endfor\
 }
 
@@ -38,10 +38,12 @@ $for(p in nl.pins())\
 $endfor\
 }
 
-inline dumpStates() {
+inline dumpState() {
+    atomic {
 $for(p in nl.pins())\
-    printf("$(p.fullName())=%d\n",$(p.fullName()))
+    printf("$(p.fullName())=%d\n",state[$(p.fullName())])
 $endfor\
+    }
 }
 
 $include(userpml)

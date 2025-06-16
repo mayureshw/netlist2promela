@@ -19,7 +19,7 @@ REPORTFILES	=	$(foreach m,$(MODELS),$(m)/$(m).report)
 
 # Note: Settign NCORE>1 leads to "shmget shared queues: Cannot allocate memory" on NetBSD
 NCORE	=	1 #$(shell /usr/bin/nproc 2>/dev/null || /sbin/sysctl -n hw.ncpu || echo 1)
-MAXDEPTH=	50000
+MAXDEPTH=	1000000
 VECTORSZ=	5000
 CFLAGS	= -O3 -DVECTORSZ=$(VECTORSZ) -DPRINTF -DNCORE=$(NCORE)
 
@@ -36,6 +36,7 @@ $1/$1.pan.out:	$1/pan.c
 
 $1/$1.report:	$1/$1.pan.out
 	$1/$1.pan.out -m$(MAXDEPTH) -a | tee $1/$1.report
+	mv -f $1.pml.trail $1
 
 endef
 

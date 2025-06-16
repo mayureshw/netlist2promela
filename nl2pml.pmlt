@@ -21,9 +21,7 @@ $for(p in nl.pins())\
 #define s_$(p.fullName()) state[$(p.fullName())]
 $endfor\
 
-$for(n,l in nl.ltl.items())\
-$(ltl2pml(l))
-$endfor\
+$(ltl2pml(nl.ltls[nl.curltl]))
 
 inline createInsts() {
 $for( inst in nl._insts.values() )\

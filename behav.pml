@@ -7,7 +7,7 @@ proctype g_latch_2_1( byte d, g, q; bool d_init, g_init, q_init )
     :: state[d] != last_d || state[g] != last_g ->
         atomic {
             if
-            :: state[g] -> state[q] = state[d]
+            :: state[g] -> setState(q,state[d])
             :: else -> skip
             fi
             last_d = state[d]
@@ -24,7 +24,7 @@ proctype g_not_1_1( byte i, o; bool i_init, o_init )
     do
     :: state[i] != last_i ->
         atomic {
-            state[o] = last_i
+            setState(o,last_i)
             last_i = state[i]
         }
     :: else -> skip
@@ -40,7 +40,7 @@ proctype g_mullerc_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
     :: state[i0] != last_i0 || state[i1] != last_i1 ->
         atomic {
             if
-            :: state[i0] == state[i1] -> state[o] = state[i0]
+            :: state[i0] == state[i1] -> setState(o,state[i0])
             :: else -> skip
             fi
             last_i0 = state[i0]
@@ -58,7 +58,7 @@ proctype g_xor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
     do
     :: state[i0] != last_i0 || state[i1] != last_i1 ->
         atomic {
-            state[o] = state[i0] ^ state[i1]
+            setState(o,state[i0] ^ state[i1])
             last_i0 = state[i0]
             last_i1 = state[i1]
         }
@@ -74,7 +74,7 @@ proctype wire( byte to, from; bool to_init, from_init )
     :: state[from] != last_from ->
         atomic {
             last_from = state[from]
-            state[to] = state[from]
+            setState(to,state[from])
         }
     :: else -> skip
     od

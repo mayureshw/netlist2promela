@@ -42,6 +42,10 @@ $for(w in nl._wires.values())\
 $endfor\
 }
 
+inline setState( id, val ) {
+    state[id] = val
+}
+
 inline initStates() {
 $for(p in nl.pins())\
     state[$(p.fullName())] = $(p.init)

@@ -12,6 +12,7 @@ class Pin:
         pinst = Pin(name,direction,nl)
         cls.pins[name] = pinst
         return pinst
+    def hasBlockUnblock(self): return len(self.blocks) > 0 or len(self.unblocks) > 0
     def fullName(self): return '_'.join([self.instname,self.name])
     def __init__(self,name,direction,nl):
         self.instname,self.name = name.split('.')
@@ -19,6 +20,8 @@ class Pin:
         inst.registerPin(self.name,direction,self)
         self.id = Pin.cnt
         Pin.cnt = Pin.cnt + 1
+        self.blocks = []
+        self.unblocks = []
 
 class Wire:
     def __init__(self,i,o,nl):
@@ -65,6 +68,7 @@ class Netlist:
     def maxOps(self): return max( len(inst.opins) for inst in self._insts.values() )
     def nonEnvInsts(self): return [ inst for inst in self._insts.values() if inst.name != 'i_env']
     def pins(self): return Pin.pins.values()
+    def pinsWithBlockUnblock(self): return [ p for p in Pin.pins.values() if p.hasBlockUnblock() ]
     def validateAndSetInit(self):
         for n,p in Pin.pins.items():
             if n not in self.init:
@@ -82,3 +86,9 @@ class Netlist:
         self._wires = { i : Wire(i,o,self) for i,o in self.wires.items() }
         self.gates = Gates(gatesjson)
         self.validateAndSetInit()
+        for a,b,c in self.constraints:
+            ap = Pin.pins[a]
+            bp = Pin.pins[b]
+            cp = Pin.pins[c]
+            ap.blocks.append(cp)
+            bp.unblocks.append(cp)

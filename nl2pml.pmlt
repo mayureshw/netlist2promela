@@ -42,8 +42,25 @@ $for(w in nl._wires.values())\
 $endfor\
 }
 
+inline blockUnblock( id ) {
+    if
+$for(p in nl.pinsWithBlockUnblock())\
+    :: id == $(p.fullName()) ->
+$for(b in p.blocks)\
+        blocker[$(b.fullName())] = 1
+$endfor\
+$for(b in p.unblocks)\
+        blocker[$(b.fullName())] = 0
+$endfor\
+$endfor\
+    :: else -> skip
+    fi
+}
 inline setState( id, val ) {
-    !blocker[id] -> state[id] = val
+    !blocker[id] ->
+        blockUnblock(id)
+        state[id] = val
+    else -> skip
 }
 
 inline initStates() {

@@ -35,7 +35,7 @@ $1/$1.pan.out:	$1/pan.c
 	cc $(CFLAGS) -o $1/$1.pan.out $1/pan.c
 
 $1/$1.report:	$1/$1.pan.out
-	$1/$1.pan.out -m$(MAXDEPTH) | tee $1/$1.report
+	$1/$1.pan.out -m$(MAXDEPTH) -a | tee $1/$1.report
 
 endef
 

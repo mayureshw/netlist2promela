@@ -18,10 +18,7 @@ bool blocker[N_STATES]
 
 $for(p in nl.pins())\
 #define $(p.fullName()) $(p.id)
-$endfor\
-
-$for(p,m in nl.props.items())\
-#define $(p) $(m)
+#define s_$(p.fullName()) state[$(p.fullName())]
 $endfor\
 
 $for(n,l in nl.ltl.items())\
@@ -38,7 +35,7 @@ $endfor\
 
 inline initWires() {
 $for(w in nl._wires.values())\
-    run wire( $(w.i.fullName()), $(w.o.fullName()), state[$(w.i.fullName())], state[$(w.o.fullName())] )
+    run wire( $(w.i.fullName()), $(w.o.fullName()), s_$(w.i.fullName()), s_$(w.o.fullName()) )
 $endfor\
 }
 
@@ -65,14 +62,14 @@ inline setState( id, val ) {
 
 inline initStates() {
 $for(p in nl.pins())\
-    state[$(p.fullName())] = $(p.init)
+    s_$(p.fullName()) = $(p.init)
 $endfor\
 }
 
 inline dumpState() {
     atomic {
 $for(p in nl.pins())\
-    printf("$(p.fullName())=%d\n",state[$(p.fullName())])
+    printf("$(p.fullName())=%d\n",s_$(p.fullName()))
 $endfor\
     }
 }

@@ -1,3 +1,9 @@
+inline setState( id, val ) {
+    state[id] != val ->
+        blockUnblock(id)
+        state[id] = val
+}
+
 proctype g_latch_2_1( byte d, g, q; bool d_init, g_init, q_init )
 {
     assert( g_init == 0 || d_init == q_init )
@@ -71,7 +77,7 @@ proctype wire( byte to, from; bool to_init, from_init )
     assert( to_init == from_init )
     bool last_from = from_init
     do
-    :: state[from] != last_from ->
+    :: !blocker[to] && ( state[from] != last_from ) ->
         atomic {
             last_from = state[from]
             setState(to,state[from])
@@ -88,4 +94,5 @@ init
         createInsts() // generated
         setInp() // user supplied
     }
+    wait() // user supplied
 }

@@ -18,6 +18,9 @@ bool blocker[N_STATES]
 
 $for(p in nl.pins())\
 #define $(p.fullName()) $(p.id)
+$endfor\
+
+$for(p in nl.pins())\
 #define s_$(p.fullName()) state[$(p.fullName())]
 $endfor\
 
@@ -50,12 +53,6 @@ $endfor\
 $endfor\
     :: else -> skip
     fi
-}
-inline setState( id, val ) {
-    !blocker[id] ->
-        blockUnblock(id)
-        state[id] = val
-    else -> skip
 }
 
 inline initStates() {

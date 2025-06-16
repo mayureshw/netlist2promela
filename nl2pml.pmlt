@@ -8,14 +8,24 @@ nl2pmldir = os.environ['NL2PMLDIR']
 gates = Gates( nl2pmldir + '/gates.json' )
 nl = Netlist(modelfile,gatesjson)
 behavpml = nl2pmldir + '/behav.pml'
+import subprocess
+def ltl2pml(ltl):
+    return subprocess.check_output(['spin','-f',ltl],text=True)
 )\
 #define N_STATES $(nl.nStates())
 bool state[N_STATES]
 bool blocker[N_STATES]
 
-
 $for(p in nl.pins())\
 #define $(p.fullName()) $(p.id)
+$endfor\
+
+$for(p,m in nl.props.items())\
+#define $(p) $(m)
+$endfor\
+
+$for(n,l in nl.ltl.items())\
+$(ltl2pml(l))
 $endfor\
 
 inline createInsts() {

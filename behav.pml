@@ -88,5 +88,4 @@ init
         createInsts() // generated
         setInp() // user supplied
     }
-    run verify() // user supplied
 }

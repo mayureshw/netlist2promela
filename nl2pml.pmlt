@@ -14,7 +14,7 @@ def ltl2pml(ltl):
 )\
 #define N_STATES $(nl.nStates())
 bool state[N_STATES]
-bool blocker[N_STATES]
+//bool blocker[N_STATES]
 
 $for(p in nl.pins())\
 #define $(p.fullName()) $(p.id)
@@ -31,14 +31,14 @@ $endfor\
 inline createInsts() {
 $for( inst in nl._insts.values() )\
 $if(inst.typ != 'g_env')\
-    run $(inst.gateFn())( $(inst.ipinargs()), $(inst.opinargs()) )
+    run $(inst.gateFn())( $(inst.argstr()) )
 $endif\
 $endfor\
 }
 
 inline initWires() {
 $for(w in nl._wires.values())\
-    run wire( $(w.i.fullName()), state[$(w.i.fullName())], $(w.o.fullName()), state[$(w.o.fullName())] )
+    run wire( $(w.i.fullName()), $(w.o.fullName()), state[$(w.i.fullName())], state[$(w.o.fullName())] )
 $endfor\
 }
 

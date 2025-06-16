@@ -1,4 +1,4 @@
-proctype g_latch_2_1( byte d, d_init, g, g_init, q, q_init )
+proctype g_latch_2_1( byte d, g, q; bool d_init, g_init, q_init )
 {
     assert( g_init == 0 || d_init == q_init )
     bool last_d = d_init
@@ -17,7 +17,7 @@ proctype g_latch_2_1( byte d, d_init, g, g_init, q, q_init )
     od
 }
 
-proctype g_not_1_1( byte i, i_init, o, o_init )
+proctype g_not_1_1( byte i, o; bool i_init, o_init )
 {
     assert( i_init != o_init )
     bool last_i = i_init
@@ -31,7 +31,7 @@ proctype g_not_1_1( byte i, i_init, o, o_init )
     od
 }
 
-proctype g_mullerc_2_1( byte i0, i0_init, i1, i1_init, o, o_init )
+proctype g_mullerc_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
 {
     assert( i0_init && i1_init || !o_init )
     bool last_i0 = i0_init
@@ -50,7 +50,7 @@ proctype g_mullerc_2_1( byte i0, i0_init, i1, i1_init, o, o_init )
     od
 }
 
-proctype g_xor_2_1( byte i0, i0_init, i1, i1_init, o, o_init )
+proctype g_xor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
 {
     assert( o_init == i0_init ^ i1_init )
     bool last_i0 = i0_init
@@ -66,7 +66,7 @@ proctype g_xor_2_1( byte i0, i0_init, i1, i1_init, o, o_init )
     od
 }
 
-proctype wire( byte to, to_init, from, from_init )
+proctype wire( byte to, from; bool to_init, from_init )
 {
     assert( to_init == from_init )
     bool last_from = from_init

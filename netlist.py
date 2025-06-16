@@ -37,9 +37,9 @@ class Instance:
     def sortedIpins(self): return sorted(self.ipins.values(),key=lambda p:p.name)
     def sortedOpins(self): return sorted(self.opins.values(),key=lambda p:p.name)
     def gateFn(self): return '_'.join([self.typ,str(len(self.ipins)),str(len(self.opins))])
-    def argstr(self,p): return p.fullName() + ', state[' + p.fullName() + ']'
-    def ipinargs(self): return ', '.join( self.argstr(p) for p in self.sortedIpins() )
-    def opinargs(self): return ', '.join( self.argstr(p) for p in self.sortedOpins() )
+    def argstr(self):
+        pins = self.sortedIpins() + self.sortedOpins()
+        return ', '.join(p.fullName() for p in pins) + ', ' + ', '.join( ('state[' + p.fullName() + ']') for p in pins )
     def __init__(self,name,typ):
         self.name = name
         self.id = Instance.cnt

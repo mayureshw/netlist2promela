@@ -61,7 +61,7 @@ $endfor\
 
 inline setInp() {
 $for(p,v in nl.inpvals.items())\
-    s_$(p.fullName()) = $(v)
+    atomic { setState( $(p.fullName()), $(v) ) }
 $endfor\
 }
 

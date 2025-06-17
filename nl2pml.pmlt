@@ -24,6 +24,10 @@ $for(p in nl.pins())\
 #define s_$(p.fullName()) state[$(p.fullName())]
 $endfor\
 
+$for(p,m in nl.props.items())\
+#define $(p) $(m)
+$endfor\
+
 $(ltl2pml(nl.ltls[nl.curltl]))
 
 inline createInsts() {

@@ -24,7 +24,7 @@ $for(p in nl.pins())\
 #define s_$(p.fullName()) state[$(p.fullName())]
 $endfor\
 
-$for(p,m in nl.props.items())\
+$for(p,m in nl.extrastates.items())\
 #define $(p) $(m)
 $endfor\
 

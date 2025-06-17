@@ -2,9 +2,8 @@ ifndef NL2PMLDIR
 $(error Please set environment variable NL2PMLDIR to point to netlist2pnml directory)
 endif
 
-ifndef NLFILES
-$(error Please set variable NLFILES listing json files to generate pml)
-endif
+MODELJSON	?=	model.json
+NLFILES		?=	$(filter-out $(MODELJSON), $(wildcard *.json))
 
 export  PYTHONPATH	:=	$(NL2PMLDIR):$(PYTHONPATH)
 
@@ -24,9 +23,9 @@ VECTORSZ=	5000
 CFLAGS	= -O3 -DVECTORSZ=$(VECTORSZ) -DPRINTF -DNCORE=$(NCORE)
 
 define pmlrule
-$1/$1.pml:	$1.json $1.pml
+$1/$1.pml: $(MODELJSON)	$1.json
 	mkdir -p $1
-	expander.py --eval="modelfile='"$1.json"'" --eval="opfile='"$1/$1.pml"'" --eval="gatesjson='"$(GATESJSON)"'" --eval="userpml='"$1.pml"'" $(NL2PML)
+	expander.py --eval="gatesjson,modelfile,propfile,opfile='$(GATESJSON)','$(MODELJSON)','$1.json','$1/$1.pml'" $(NL2PML)
 
 $1/pan.c:	$1/$1.pml
 	cd $1 && spin -a $1.pml

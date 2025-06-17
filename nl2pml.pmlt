@@ -6,7 +6,7 @@ from netlist import Netlist
 sys.stdout = open( opfile, 'w' )
 nl2pmldir = os.environ['NL2PMLDIR']
 gates = Gates( nl2pmldir + '/gates.json' )
-nl = Netlist(modelfile,gatesjson)
+nl = Netlist(gatesjson,modelfile,propfile)
 behavpml = nl2pmldir + '/behav.pml'
 import subprocess
 def ltl2pml(ltl):
@@ -28,7 +28,7 @@ $for(p,m in nl.extrastates.items())\
 #define $(p) $(m)
 $endfor\
 
-$(ltl2pml(nl.ltls[nl.curltl]))
+$(ltl2pml(nl.ltl))
 
 inline createInsts() {
 $for( inst in nl._insts.values() )\

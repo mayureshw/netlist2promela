@@ -78,9 +78,11 @@ class Netlist:
         for p in self.init:
             if p not in Pin.pins:
                 print('Unknown pin in init spec',p,file=sys.stderr)
-    def __init__(self,nljson,gatesjson):
-        nlspec = json.load( open(nljson) )
-        self.__dict__.update(nlspec)
+    def __init__(self,gatesjson,modelfile,propfile):
+        modelspec = json.load( open(modelfile) )
+        self.__dict__.update(modelspec)
+        propspec = json.load( open(propfile) )
+        self.__dict__.update(propspec)
         self._instnames =  self.stdinsts + sorted(self.insts.keys())
         self._insts = { n:Instance(n,self.insts.get(n,None)) for n in self._instnames }
         self._wires = { i : Wire(i,o,self) for i,o in self.wires.items() }

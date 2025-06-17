@@ -94,5 +94,4 @@ init
         createInsts() // generated
         setInp() // user supplied
     }
-    wait() // user supplied
 }

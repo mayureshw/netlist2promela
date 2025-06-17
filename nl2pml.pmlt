@@ -59,6 +59,12 @@ $endfor\
     fi
 }
 
+inline setInp() {
+$for(p,v in nl.inpvals.items())\
+    s_$(p.fullName()) = $(v)
+$endfor\
+}
+
 inline initStates() {
 $for(p in nl.pins())\
     s_$(p.fullName()) = $(p.init)
@@ -73,5 +79,4 @@ $endfor\
     }
 }
 
-$include(userpml)
 $include(behavpml)

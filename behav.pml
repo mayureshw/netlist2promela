@@ -88,10 +88,10 @@ proctype wire( byte to, from; bool to_init, from_init )
 
 init
 {
-    atomic {
-        initStates() // generated
-        initWires() // generated
-        createInsts() // generated
-        setInp() // user supplied
+    atomic { // calls to generated code
+        initStates()
+        initWires()
+        createInsts()
+        setInp()
     }
 }

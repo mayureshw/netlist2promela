@@ -78,6 +78,13 @@ class Netlist:
         for p in self.init:
             if p not in Pin.pins:
                 print('Unknown pin in init spec',p,file=sys.stderr)
+    def validateAndSetInp(self):
+        self.inpvals = {}
+        for p,v in self.inp.items():
+            if p not in Pin.pins:
+                print('Unknown pin in inp spec',p,file=sys.stderr)
+            else:
+                self.inpvals[Pin.pins[p]] = v
     def __init__(self,gatesjson,modelfile,propfile):
         modelspec = json.load( open(modelfile) )
         self.__dict__.update(modelspec)
@@ -88,6 +95,7 @@ class Netlist:
         self._wires = { i : Wire(i,o,self) for i,o in self.wires.items() }
         self.gates = Gates(gatesjson)
         self.validateAndSetInit()
+        self.validateAndSetInp()
         for a,b,c in self.constraints:
             ap = Pin.pins[a]
             bp = Pin.pins[b]

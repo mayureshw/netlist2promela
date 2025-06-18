@@ -6,11 +6,11 @@ inline setState( id, val ) {
 
 proctype g_latch_2_1( byte d, g, q; bool d_init, g_init, q_init )
 {
-    assert( g_init == 0 || d_init == q_init )
+    assert( ( g_init == 0 ) || ( d_init == q_init ) )
     bool last_d = d_init
     bool last_g = g_init
     do
-    :: state[d] != last_d || state[g] != last_g ->
+    :: ( state[d] != last_d )  || ( state[g] != last_g ) ->
         atomic {
             if
             :: state[g] -> setState(q,state[d])
@@ -43,10 +43,10 @@ proctype g_mullerc_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
     bool last_i0 = i0_init
     bool last_i1 = i1_init
     do
-    :: state[i0] != last_i0 || state[i1] != last_i1 ->
+    :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
         atomic {
             if
-            :: state[i0] == state[i1] -> setState(o,state[i0])
+            :: ( state[i0] == state[i1] ) -> setState(o,state[i0])
             :: else -> skip
             fi
             last_i0 = state[i0]
@@ -62,7 +62,7 @@ proctype g_xor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
     bool last_i0 = i0_init
     bool last_i1 = i1_init
     do
-    :: state[i0] != last_i0 || state[i1] != last_i1 ->
+    :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
         atomic {
             setState(o,state[i0] ^ state[i1])
             last_i0 = state[i0]

@@ -1,4 +1,5 @@
 $py(
+LTLTOOL='ltl2ba' #spin
 import sys
 import os
 from gates import Gates
@@ -10,7 +11,7 @@ nl = Netlist(gatesjson,modelfile,propfile)
 behavpml = nl2pmldir + '/behav.pml'
 import subprocess
 def ltl2pml(ltl):
-    return subprocess.check_output(['spin','-f',ltl],text=True)
+    return subprocess.check_output([LTLTOOL,'-f',ltl],text=True)
 )\
 #define N_STATES $(nl.nStates())
 bool state[N_STATES]

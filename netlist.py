@@ -80,9 +80,9 @@ class Netlist:
                 print('Unknown pin in init spec',p,file=sys.stderr)
     def validateAndSetInp(self):
         self.inpvals = {}
-        for p,v in self.inp.items():
+        for p,v in self.evseq.items():
             if p not in Pin.pins:
-                print('Unknown pin in inp spec',p,file=sys.stderr)
+                print('Unknown pin in evseq spec',p,file=sys.stderr)
             else:
                 self.inpvals[Pin.pins[p]] = v
     def __init__(self,gatesjson,modelfile,propfile):

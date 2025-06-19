@@ -1,7 +1,9 @@
 inline setState( id, val ) {
-    state[id] != val ->
-        blockUnblock(id)
-        state[id] = val
+    blockUnblock(id)
+    if
+    :: state[id] != val -> state[id] = val
+    :: else -> skip
+    fi
 }
 
 // NOTE: We do not follow else -> skip pattern in the gate and wire processes
@@ -14,12 +16,9 @@ proctype g_latch_2_1( byte d, g, q; bool d_init, g_init, q_init )
     bool last_d = d_init
     bool last_g = g_init
     do
-    :: ( state[d] != last_d )  || ( state[g] != last_g ) ->
+    :: ( ( ( state[d] != last_d )  || ( state[g] != last_g ) ) && state[g] ) ->
         atomic {
-            if
-            :: state[g] -> setState(q,state[d])
-            :: else -> skip
-            fi
+            setState(q,state[d])
             last_d = state[d]
             last_g = state[g]
         }
@@ -45,12 +44,9 @@ proctype g_mullerc_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
     bool last_i0 = i0_init
     bool last_i1 = i1_init
     do
-    :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
+    :: ( ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ) && ( state[i0] == state[i1] ) ->
         atomic {
-            if
-            :: ( state[i0] == state[i1] ) -> setState(o,state[i0])
-            :: else -> skip
-            fi
+            setState(o,state[i0])
             last_i0 = state[i0]
             last_i1 = state[i1]
         }

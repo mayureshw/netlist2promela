@@ -46,6 +46,7 @@ $endfor\
 }
 
 inline blockUnblock( id ) {
+$if( nl.havePinWithBlockUnblock() )\
     if
 $for(p in nl.pinsWithBlockUnblock())\
     :: id == $(p.fullName()) ->
@@ -58,6 +59,9 @@ $endfor\
 $endfor\
     :: else -> skip
     fi
+$else\
+    skip
+$endif\
 }
 
 inline setInp() {

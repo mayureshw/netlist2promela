@@ -15,7 +15,7 @@ def ltl2pml(ltl):
 )\
 #define N_STATES $(nl.nStates())
 bool state[N_STATES]
-byte blocker[N_STATES]
+bool blocker[N_STATES]
 
 $for(p in nl.pins())\
 #define $(p.fullName()) $(p.id)
@@ -51,13 +51,10 @@ $if( nl.havePinWithBlockUnblock() )\
 $for(p in nl.pinsWithBlockUnblock())\
     :: id == $(p.fullName()) ->
 $for(b in p.blocks)\
-        blocker[$(b.fullName())]++
+        blocker[$(b.fullName())] = 1
 $endfor\
 $for(b in p.unblocks)\
-        if
-        :: blocker[$(b.fullName())] -> blocker[$(b.fullName())]--
-        :: else -> skip
-        fi
+        blocker[$(b.fullName())] = 0
 $endfor\
 $endfor\
     :: else -> skip

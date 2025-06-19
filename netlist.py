@@ -69,6 +69,7 @@ class Netlist:
     def nonEnvInsts(self): return [ inst for inst in self._insts.values() if inst.name != 'i_env']
     def pins(self): return Pin.pins.values()
     def pinsWithBlockUnblock(self): return [ p for p in Pin.pins.values() if p.hasBlockUnblock() ]
+    def havePinWithBlockUnblock(self): return any( p.hasBlockUnblock() for p in Pin.pins.values() )
     def validateAndSetInit(self):
         for n,p in Pin.pins.items():
             if n not in self.init:

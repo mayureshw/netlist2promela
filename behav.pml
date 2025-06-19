@@ -4,6 +4,10 @@ inline setState( id, val ) {
         state[id] = val
 }
 
+// NOTE: We do not follow else -> skip pattern in the gate and wire processes
+// as it leads to a false livelock detection by spin, leading to early
+// inference of acceptance cycles.
+
 proctype g_latch_2_1( byte d, g, q; bool d_init, g_init, q_init )
 {
     assert( ( g_init == 0 ) || ( d_init == q_init ) )
@@ -19,7 +23,6 @@ proctype g_latch_2_1( byte d, g, q; bool d_init, g_init, q_init )
             last_d = state[d]
             last_g = state[g]
         }
-    :: else -> skip
     od
 }
 
@@ -33,7 +36,6 @@ proctype g_not_1_1( byte i, o; bool i_init, o_init )
             setState(o,last_i)
             last_i = state[i]
         }
-    :: else -> skip
     od
 }
 
@@ -52,7 +54,6 @@ proctype g_mullerc_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
             last_i0 = state[i0]
             last_i1 = state[i1]
         }
-    :: else -> skip
     od
 }
 
@@ -68,7 +69,6 @@ proctype g_xor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
             last_i0 = state[i0]
             last_i1 = state[i1]
         }
-    :: else -> skip
     od
 }
 
@@ -82,7 +82,6 @@ proctype wire( byte to, from; bool to_init, from_init )
             last_from = state[from]
             setState(to,state[from])
         }
-    :: else -> skip
     od
 }
 

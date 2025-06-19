@@ -97,7 +97,12 @@ class Netlist:
         self.gates = Gates(gatesjson)
         self.validateAndSetInit()
         self.validateAndSetInp()
-        for a,b,c in self.constraints:
+        self.applycons = []
+        for acons in self.applycons :
+            if acons not in self.constraints:
+                print('Unknown constraint',acons)
+            else: self.applycons.append( self.constraints[acons] )
+        for a,b,c in self.applycons:
             ap = Pin.pins[a]
             bp = Pin.pins[b]
             cp = Pin.pins[c]

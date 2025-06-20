@@ -3,6 +3,25 @@ import json
 from collections import Counter
 from gates import Gates
 
+class BlockUnblocker:
+    def __str__(self): return self.condstr() + ' -> ' + self.actionstr()
+    def condstr(self): return ':: ( ( id == ' + self.srcpin.fullName() + ' ) && ( val == ' + self.srcdir + ' ) )'
+    def actionstr(self): return self.blockername() + '[' + self.tgtpin.fullName() + '] = ' + self.actionval()
+    def blockername(self): return 'block_rise' if self.tgtdir == '1' else 'block_fall'
+    def __init__(self,srcpin,srcdir,tgtpin,tgtdir):
+        self.srcpin = srcpin
+        self.srcdir = srcdir
+        self.tgtpin = tgtpin
+        self.tgtdir = tgtdir
+
+class Blocker(BlockUnblocker):
+    def actionval(self): return '1'
+    def __init__(self,s,sd,t,td) : super().__init__(s,sd,t,td)
+
+class Unblocker(BlockUnblocker):
+    def actionval(self): return '0'
+    def __init__(self,s,sd,t,td) : super().__init__(s,sd,t,td)
+
 class Pin:
     cnt = 0
     pins = {}
@@ -12,7 +31,6 @@ class Pin:
         pinst = Pin(name,direction,nl)
         cls.pins[name] = pinst
         return pinst
-    def hasBlockUnblock(self): return len(self.blocks) > 0 or len(self.unblocks) > 0
     def fullName(self): return '_'.join([self.instname,self.name])
     def __init__(self,name,direction,nl):
         self.instname,self.name = name.split('.')
@@ -20,8 +38,6 @@ class Pin:
         inst.registerPin(self.name,direction,self)
         self.id = Pin.cnt
         Pin.cnt = Pin.cnt + 1
-        self.blocks = []
-        self.unblocks = []
 
 class Wire:
     def __init__(self,i,o,nl):
@@ -68,8 +84,6 @@ class Netlist:
     def maxOps(self): return max( len(inst.opins) for inst in self._insts.values() )
     def nonEnvInsts(self): return [ inst for inst in self._insts.values() if inst.name != 'i_env']
     def pins(self): return Pin.pins.values()
-    def pinsWithBlockUnblock(self): return [ p for p in Pin.pins.values() if p.hasBlockUnblock() ]
-    def havePinWithBlockUnblock(self): return any( p.hasBlockUnblock() for p in Pin.pins.values() )
     def validateAndSetInit(self):
         for n,p in Pin.pins.items():
             if n not in self.init:
@@ -86,6 +100,11 @@ class Netlist:
                 print('Unknown pin in evseq spec',p,file=sys.stderr)
             else:
                 self.inpvals[Pin.pins[p]] = v
+    def cons2pindir(self,consp):
+        p,_,d = consp.rpartition('.')
+        pin = Pin.pins[p]
+        dirn = '1' if d == '^' else '0'
+        return pin,dirn
     def __init__(self,gatesjson,modelfile,propfile):
         modelspec = json.load( open(modelfile) )
         self.__dict__.update(modelspec)
@@ -98,13 +117,18 @@ class Netlist:
         self.validateAndSetInit()
         self.validateAndSetInp()
         applycons = []
+        # Organize blockers/unblockers by the triggering pin and club actions under it. This will be needed when 1 event triggers multiple block/unblocks
+        self.blockers = []
+        self.unblockers = []
         for acons in self.applycons :
             if acons not in self.constraints:
                 print('Unknown constraint',acons)
             else: applycons.append( self.constraints[acons] )
         for a,b,c in applycons:
-            ap = Pin.pins[a]
-            bp = Pin.pins[b]
-            cp = Pin.pins[c]
-            ap.blocks.append(cp)
-            bp.unblocks.append(cp)
+            ap,adir = self.cons2pindir(a)
+            bp,bdir = self.cons2pindir(b)
+            cp,cdir = self.cons2pindir(c)
+            blocker = Blocker(ap,adir,cp,cdir)
+            unblocker = Unblocker(bp,bdir,cp,cdir)
+            self.blockers.append(blocker)
+            self.unblockers.append(unblocker)

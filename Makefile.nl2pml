@@ -36,6 +36,7 @@ $1/$1.pan.out:	$1/pan.c
 $1/$1.report:	$1/$1.pan.out
 	cd $1 && ./$1.pan.out -m$(MAXDEPTH) -av | tee $1.report
 	@echo $1.pan.out -r for detailed trace
+	@echo spin -t $1.pml to analyze trace
 
 endef
 

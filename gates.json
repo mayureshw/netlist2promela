@@ -12,6 +12,22 @@
     "metatype" : "basicgate"
     },
 
+"g_xnor" : {
+    "metatype" : "basicgate"
+    },
+
+"g_or" : {
+    "metatype" : "basicgate"
+    },
+
+"g_nor" : {
+    "metatype" : "basicgate"
+    },
+
+"g_and" : {
+    "metatype" : "basicgate"
+    },
+
 "g_not" : {
     "nInp"     : 1,
     "metatype" : "basicgate"
@@ -21,6 +37,13 @@
     "nInp" : 2,
     "nOp"  : 1,
     "inps" : [ "d", "g" ],
+    "ops"  : [ "q" ]
+    },
+
+"g_latchrn" : {
+    "nInp" : 3,
+    "nOp"  : 1,
+    "inps" : [ "d", "g", "rn" ],
     "ops"  : [ "q" ]
     }
 

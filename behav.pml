@@ -16,12 +16,40 @@ proctype g_latch_2_1( byte d, g, q; bool d_init, g_init, q_init )
     bool last_d = d_init
     bool last_g = g_init
     do
-    :: ( ( ( state[d] != last_d )  || ( state[g] != last_g ) ) && state[g] ) ->
+    :: ( ( ( state[d] != last_d ) || ( state[g] != last_g ) ) && state[g] ) ->
         atomic {
             setState(q,state[d])
             last_d = state[d]
             last_g = state[g]
         }
+    od
+}
+
+proctype g_latchrn_3_1( byte d, g, rn, q; bool d_init, g_init, rn_init, q_init )
+{
+    assert( !rn_init && !q_init || rn_init && (  !g_init || ( d_init == q_init ) ) )
+    bool last_d  = d_init
+    bool last_g  = g_init
+    bool last_rn = rn_init
+    do
+    :: ( ( state[d] != last_d ) || ( state[g] != last_g ) || ( state[rn] != last_rn ) ) ->
+        if
+        :: !state[rn] ->
+                atomic {
+                    setState(q,0)
+                    last_d = state[d]
+                    last_g = state[g]
+                    last_rn = state[rn]
+                }
+        :: state[rn] && state[g] ->
+                atomic {
+                    setState(q,state[d])
+                    last_d = state[d]
+                    last_g = state[g]
+                    last_rn = state[rn]
+                }
+        :: else -> skip
+        fi
     od
 }
 
@@ -55,13 +83,73 @@ proctype g_mullerc_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
 
 proctype g_xor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
 {
-    assert( o_init == i0_init ^ i1_init )
+    assert( o_init == ( i0_init ^ i1_init ) )
     bool last_i0 = i0_init
     bool last_i1 = i1_init
     do
     :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
         atomic {
             setState(o,state[i0] ^ state[i1])
+            last_i0 = state[i0]
+            last_i1 = state[i1]
+        }
+    od
+}
+
+proctype g_xnor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
+{
+    assert( o_init == !( i0_init ^ i1_init ) )
+    bool last_i0 = i0_init
+    bool last_i1 = i1_init
+    do
+    :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
+        atomic {
+            setState(o, !( state[i0] ^ state[i1] ))
+            last_i0 = state[i0]
+            last_i1 = state[i1]
+        }
+    od
+}
+
+proctype g_or_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
+{
+    assert( o_init == ( i0_init || i1_init ) )
+    bool last_i0 = i0_init
+    bool last_i1 = i1_init
+    do
+    :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
+        atomic {
+            setState(o,state[i0] || state[i1])
+            last_i0 = state[i0]
+            last_i1 = state[i1]
+        }
+    od
+}
+
+proctype g_nor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
+{
+    assert( o_init == !( i0_init || i1_init ) )
+    bool last_i0 = i0_init
+    bool last_i1 = i1_init
+    do
+    :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
+        atomic {
+            setState(o,!(state[i0] || state[i1]))
+            last_i0 = state[i0]
+            last_i1 = state[i1]
+        }
+    od
+}
+
+proctype g_and_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
+{
+    assert( o_init == ( i0_init && i1_init ) )
+    bool last_i0 = i0_init
+    bool last_i1 = i1_init
+    do
+    :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
+        atomic {
+            setState(o,state[i0] && state[i1])
             last_i0 = state[i0]
             last_i1 = state[i1]
         }

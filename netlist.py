@@ -87,7 +87,8 @@ class Netlist:
     def validateAndSetInit(self):
         for n,p in Pin.pins.items():
             if n not in self.init:
-                print('No init value for pin',n,file=sys.stderr)
+                p.init = 0
+                print('init value defaulted to 0 for pin',n,file=sys.stderr)
             else:
                 p.init = self.init[n]
         for p in self.init:

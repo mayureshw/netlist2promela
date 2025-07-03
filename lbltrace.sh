@@ -21,6 +21,8 @@ fi
 awk '
 /^#define i_/ {
     printf "s/\\<state\\[%s\\]/%s/g\n", $3, $2
+    printf "s/\\<block_rise\\[%s\\]/block_rise_%s/g\n", $3, $2
+    printf "s/\\<block_fall\\[%s\\]/block_fall_%s/g\n", $3, $2
     next
     }
 ' $PML | sed -f - -i $TRACE

@@ -31,6 +31,7 @@ class Pin:
         pinst = Pin(name,direction,nl)
         cls.pins[name] = pinst
         return pinst
+    def isfork(self): return len(self.drives) > 1
     def fullName(self): return '_'.join([self.instname,self.name])
     def __init__(self,name,direction,nl):
         self.instname,self.name = name.split('.')
@@ -38,11 +39,13 @@ class Pin:
         inst.registerPin(self.name,direction,self)
         self.id = Pin.cnt
         Pin.cnt = Pin.cnt + 1
+        self.drives = []
 
 class Wire:
     def __init__(self,i,o,nl):
         self.i = Pin.get(i,'i',nl)
         self.o = Pin.get(o,'o',nl)
+        self.o.drives.append(self.i)
 
 class Instance:
     cnt = 0
@@ -106,6 +109,7 @@ class Netlist:
         pin = Pin.pins[p]
         dirn = '1' if d == '^' else '0'
         return pin,dirn
+    def forks(self): return [ p for p in Pin.pins.values() if p.isfork() ]
     def __init__(self,gatesjson,modelfile,propfile):
         modelspec = json.load( open(modelfile) )
         self.__dict__.update(modelspec)

@@ -37,6 +37,7 @@ $1/$1.report:	$1/$1.pan.out
 	cd $1 && ./$1.pan.out -m$(MAXDEPTH) -av | tee $1.report
 	@echo $1.pan.out -r for detailed trace
 	@echo spin -t $1.pml to analyze trace
+	@echo Use lbltrace.sh to lable states in a trace file
 
 endef
 

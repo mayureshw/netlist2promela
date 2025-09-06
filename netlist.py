@@ -111,6 +111,7 @@ class Netlist:
         return pin,dirn
     def forks(self): return [ p for p in Pin.pins.values() if p.isfork() ]
     def __init__(self,gatesjson,modelfile,propfile):
+        self.extrapml = ''
         modelspec = json.load( open(modelfile) )
         self.__dict__.update(modelspec)
         propspec = json.load( open(propfile) )

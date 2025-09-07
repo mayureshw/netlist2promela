@@ -175,5 +175,6 @@ init
         initStates()
         initWires()
         createInsts()
+        postinit()
     }
 }

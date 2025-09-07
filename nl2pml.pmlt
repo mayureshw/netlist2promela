@@ -82,6 +82,7 @@ $endfor\
     }
 }
 
+$include(nl.postinit)
 $include(behavpml)
 
 // Forks (usually advisable to have constraints on them)
@@ -89,4 +90,3 @@ $for(p in nl.forks())\
 // $(p.fullName())
 $endfor\
 
-$include(nl.postinit)

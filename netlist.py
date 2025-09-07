@@ -97,13 +97,6 @@ class Netlist:
         for p in self.init:
             if p not in Pin.pins:
                 print('Unknown pin in init spec',p,file=sys.stderr)
-    def validateAndSetInp(self):
-        self.inpvals = {}
-        for p,v in self.evseq.items():
-            if p not in Pin.pins:
-                print('Unknown pin in evseq spec',p,file=sys.stderr)
-            else:
-                self.inpvals[Pin.pins[p]] = v
     def cons2pindir(self,consp):
         p,_,d = consp.rpartition('.')
         pin = Pin.pins[p]
@@ -111,7 +104,6 @@ class Netlist:
         return pin,dirn
     def forks(self): return [ p for p in Pin.pins.values() if p.isfork() ]
     def __init__(self,gatesjson,modelfile,propfile):
-        self.extrapml = ''
         modelspec = json.load( open(modelfile) )
         self.__dict__.update(modelspec)
         propspec = json.load( open(propfile) )
@@ -121,7 +113,6 @@ class Netlist:
         self._wires = { i : Wire(i,o,self) for i,o in self.wires.items() }
         self.gates = Gates(gatesjson)
         self.validateAndSetInit()
-        self.validateAndSetInp()
         applycons = []
         # Organize blockers/unblockers by the triggering pin and club actions under it. This will be needed when 1 event triggers multiple block/unblocks
         self.blockers = []

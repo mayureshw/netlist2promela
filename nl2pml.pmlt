@@ -62,12 +62,6 @@ $else\
 $endif\
 }
 
-inline setInp() {
-$for(p,v in nl.inpvals.items())\
-    atomic { setState( $(p.fullName()), $(v) ) }
-$endfor\
-}
-
 inline initStates() {
 $for(p in nl.pins())\
     block_rise[$(p.fullName())] = 0
@@ -95,6 +89,4 @@ $for(p in nl.forks())\
 // $(p.fullName())
 $endfor\
 
-$if(nl.extrapml)
-$include(nl.extrapml)
-$endif
+$include(nl.postinit)

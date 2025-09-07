@@ -175,6 +175,5 @@ init
         initStates()
         initWires()
         createInsts()
-        setInp()
     }
 }

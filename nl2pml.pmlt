@@ -9,9 +9,6 @@ nl2pmldir = os.environ['NL2PMLDIR']
 gates = Gates( nl2pmldir + '/gates.json' )
 nl = Netlist(gatesjson,modelfile,propfile)
 behavpml = nl2pmldir + '/behav.pml'
-import subprocess
-def ltl2pml(ltl):
-    return subprocess.check_output([LTLTOOL,'-f',ltl],text=True)
 )\
 #define N_STATES $(nl.nStates())
 bool state[N_STATES]
@@ -30,7 +27,7 @@ $for(p,m in nl.extrastates.items())\
 #define $(p) $(m)
 $endfor\
 
-$(ltl2pml(nl.ltl))
+$(nl.neverClaim())
 
 inline createInsts() {
 $for( inst in nl._insts.values() )\

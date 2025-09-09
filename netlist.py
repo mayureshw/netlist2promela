@@ -79,12 +79,22 @@ class Instance:
 
 class Prop:
     LTLTOOL='ltl2ba' #alternative: spin
-    def neverClaim(self): return subprocess.check_output([self.LTLTOOL,'-f',self.ltl],text=True)
+    def neverClaim(self): return subprocess.check_output([self.LTLTOOL,'-f',self.ltl()],text=True)
+    def ltl(self):
+        typ = self.propspec['type']
+        handler = getattr(self, 'handle_' + typ)
+        if handler == None :
+            print('Unhandled property type',typ)
+            sys.exit(1)
+        return handler()
+    def handle_ltl(self): return self.propspec['ltl']
+    def handle_alllive(self):
+    def applycons(self): return self.propspec.get('applycons',[])
     def __init__(self,propspec):
-        self.applycons = propspec.get('applycons',[])
-        if 'ltl' in propspec: self.ltl = propspec['ltl']
-        else: print('Unknown constraint type',propspec)
-        self.__dict__.update(propspec)
+        if 'type' not in propspec:
+            print('No property type specified in',propspec)
+            sys.exit(1)
+        self.propspec = propspec
 
 class Netlist:
     stdinsts = [ 'i_env' ]
@@ -128,7 +138,7 @@ class Netlist:
         # Organize blockers/unblockers by the triggering pin and club actions under it. This will be needed when 1 event triggers multiple block/unblocks
         self.blockers = []
         self.unblockers = []
-        for acons in self.prop.applycons :
+        for acons in self.prop.applycons() :
             if acons not in self.constraints:
                 print('Unknown constraint',acons)
             else: applycons.append( self.constraints[acons] )

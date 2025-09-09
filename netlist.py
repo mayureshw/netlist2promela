@@ -89,9 +89,12 @@ class Prop:
         return handler()
     def handle_ltl(self): return self.propspec['ltl']
     def handle_alllive(self):
+        selectpins = set( self.propspec.get('selectpins',[]) )
+        selector = ( lambda p : p.fullName() in selectpins ) if selectpins else ( lambda p : True )
+        pins = [ p for p in self.nl.pins() if selector(p) ]
         return ' || '.join(
             '( <> [] ' + p.fullName() + ' ) || ( <> [] !' + p.fullName() + ' )'
-            for p in self.nl.pins() )
+            for p in pins )
     def applycons(self): return self.propspec.get('applycons',[])
     def __init__(self,nl,propspec):
         if 'type' not in propspec:
@@ -145,7 +148,7 @@ class Netlist:
         for acons in self.prop.applycons() :
             if acons not in self.constraints:
                 print('Unknown constraint',acons)
-            else: applycons.append( self.constraints[acons] )
+            else: applycons += self.constraints[acons]
         for a,b,c in applycons:
             ap,adir = self.cons2pindir(a)
             bp,bdir = self.cons2pindir(b)

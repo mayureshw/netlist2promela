@@ -89,11 +89,15 @@ class Prop:
         return handler()
     def handle_ltl(self): return self.propspec['ltl']
     def handle_alllive(self):
+        return ' || '.join(
+            '( <> [] ' + p.fullName() + ' ) || ( <> [] !' + p.fullName() + ' )'
+            for p in self.nl.pins() )
     def applycons(self): return self.propspec.get('applycons',[])
-    def __init__(self,propspec):
+    def __init__(self,nl,propspec):
         if 'type' not in propspec:
             print('No property type specified in',propspec)
             sys.exit(1)
+        self.nl = nl
         self.propspec = propspec
 
 class Netlist:
@@ -128,7 +132,7 @@ class Netlist:
         modelspec = json.load( open(modelfile) )
         self.__dict__.update(modelspec)
         propspec = json.load( open(propfile) )
-        self.prop = Prop(propspec)
+        self.prop = Prop(self,propspec)
         self._instnames =  self.stdinsts + sorted(self.insts.keys())
         self._insts = { n:Instance(n,self.insts.get(n,None)) for n in self._instnames }
         self._wires = { i : Wire(i,o,self) for i,o in self.wires.items() }

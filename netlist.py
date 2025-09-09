@@ -1,3 +1,4 @@
+import subprocess
 import sys
 import json
 from collections import Counter
@@ -76,8 +77,18 @@ class Instance:
         self.ipins = {}
         self.opins = {}
 
+class Prop:
+    LTLTOOL='ltl2ba' #alternative: spin
+    def neverClaim(self): return subprocess.check_output([self.LTLTOOL,'-f',self.ltl],text=True)
+    def __init__(self,propspec):
+        self.applycons = propspec.get('applycons',[])
+        if 'ltl' in propspec: self.ltl = propspec['ltl']
+        else: print('Unknown constraint type',propspec)
+        self.__dict__.update(propspec)
+
 class Netlist:
     stdinsts = [ 'i_env' ]
+    def neverClaim(self): return self.prop.neverClaim()
     def nStates(self): return Pin.cnt
     def nInsts(self): return len(self.instNames())
     def instNames(self): return self._instnames
@@ -107,7 +118,7 @@ class Netlist:
         modelspec = json.load( open(modelfile) )
         self.__dict__.update(modelspec)
         propspec = json.load( open(propfile) )
-        self.__dict__.update(propspec)
+        self.prop = Prop(propspec)
         self._instnames =  self.stdinsts + sorted(self.insts.keys())
         self._insts = { n:Instance(n,self.insts.get(n,None)) for n in self._instnames }
         self._wires = { i : Wire(i,o,self) for i,o in self.wires.items() }
@@ -117,7 +128,7 @@ class Netlist:
         # Organize blockers/unblockers by the triggering pin and club actions under it. This will be needed when 1 event triggers multiple block/unblocks
         self.blockers = []
         self.unblockers = []
-        for acons in self.applycons :
+        for acons in self.prop.applycons :
             if acons not in self.constraints:
                 print('Unknown constraint',acons)
             else: applycons.append( self.constraints[acons] )

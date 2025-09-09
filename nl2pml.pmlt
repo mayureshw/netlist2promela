@@ -1,5 +1,4 @@
 $py(
-LTLTOOL='ltl2ba' #spin
 import sys
 import os
 from gates import Gates

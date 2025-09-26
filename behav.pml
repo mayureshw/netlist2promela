@@ -1,5 +1,4 @@
 inline setState( id, val ) {
-    blockUnblock(id,val)
     if
     :: state[id] != val -> state[id] = val
     :: else -> skip
@@ -161,7 +160,7 @@ proctype wire( byte to, from; bool to_init, from_init )
     assert( to_init == from_init )
     bool last_from = from_init
     do
-    :: ( state[from] != last_from ) && ( ( state[from] && !block_rise[to] ) || ( !state[from] && !block_fall[to] ) ) ->
+    :: ( state[from] != last_from ) && ( ( state[from] && !block_rise[to] ) || ( !state[from] && !block_fall[to] ) ) && wait(to,state[from]) ->
         atomic {
             last_from = state[from]
             setState(to,state[from])

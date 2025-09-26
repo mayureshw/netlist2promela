@@ -4,25 +4,6 @@ import json
 from collections import Counter
 from gates import Gates
 
-class BlockUnblocker:
-    def __str__(self): return self.condstr() + ' -> ' + self.actionstr()
-    def condstr(self): return ':: ( ( id == ' + self.srcpin.fullName() + ' ) && ( val == ' + self.srcdir + ' ) )'
-    def actionstr(self): return self.blockername() + '[' + self.tgtpin.fullName() + '] = ' + self.actionval()
-    def blockername(self): return 'block_rise' if self.tgtdir == '1' else 'block_fall'
-    def __init__(self,srcpin,srcdir,tgtpin,tgtdir):
-        self.srcpin = srcpin
-        self.srcdir = srcdir
-        self.tgtpin = tgtpin
-        self.tgtdir = tgtdir
-
-class Blocker(BlockUnblocker):
-    def actionval(self): return '1'
-    def __init__(self,s,sd,t,td) : super().__init__(s,sd,t,td)
-
-class Unblocker(BlockUnblocker):
-    def actionval(self): return '0'
-    def __init__(self,s,sd,t,td) : super().__init__(s,sd,t,td)
-
 class Pin:
     cnt = 0
     pins = {}
@@ -125,11 +106,6 @@ class Netlist:
         for p in self.init:
             if p not in Pin.pins:
                 print('Unknown pin in init spec',p,file=sys.stderr)
-    def cons2pindir(self,consp):
-        p,_,d = consp.rpartition('.')
-        pin = Pin.pins[p]
-        dirn = '1' if d == '^' else '0'
-        return pin,dirn
     def forks(self): return [ p for p in Pin.pins.values() if p.isfork() ]
     def __init__(self,gatesjson,modelfile,propfile):
         modelspec = json.load( open(modelfile) )
@@ -141,19 +117,11 @@ class Netlist:
         self._wires = { i : Wire(i,o,self) for i,o in self.wires.items() }
         self.gates = Gates(gatesjson)
         self.validateAndSetInit()
-        applycons = []
+        self.applycons = []
         # Organize blockers/unblockers by the triggering pin and club actions under it. This will be needed when 1 event triggers multiple block/unblocks
         self.blockers = []
         self.unblockers = []
         for acons in self.prop.applycons() :
             if acons not in self.constraints:
                 print('Unknown constraint',acons)
-            else: applycons += self.constraints[acons]
-        for a,b,c in applycons:
-            ap,adir = self.cons2pindir(a)
-            bp,bdir = self.cons2pindir(b)
-            cp,cdir = self.cons2pindir(c)
-            blocker = Blocker(ap,adir,cp,cdir)
-            unblocker = Unblocker(bp,bdir,cp,cdir)
-            self.blockers.append(blocker)
-            self.unblockers.append(unblocker)
+            else: self.applycons.append(tuple(self.constraints[acons]))

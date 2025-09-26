@@ -11,8 +11,6 @@ behavpml = nl2pmldir + '/behav.pml'
 )\
 #define N_STATES $(nl.nStates())
 bool state[N_STATES]
-bool block_rise[N_STATES]
-bool block_fall[N_STATES]
 
 $for(p in nl.pins())\
 #define $(p.fullName()) $(p.id)
@@ -42,14 +40,11 @@ $for(w in nl._wires.values())\
 $endfor\
 }
 
-inline blockUnblock( id,val ) {
-$if( len(nl.blockers) > 0 )\
+inline wait( id,val ) {
+$if( len(nl.applycons) > 0 )\
     if
-$for( b in nl.blockers )\
-    $(str(b))
-$endfor\
-$for( b in nl.unblockers )\
-    $(str(b))
+$for( p,c in nl.applycons )\
+    :: ( id == $(p) ) -> ( $(c) )
 $endfor\
     :: else -> skip
     fi
@@ -59,12 +54,6 @@ $endif\
 }
 
 inline initStates() {
-$for(p in nl.pins())\
-    block_rise[$(p.fullName())] = 0
-$endfor\
-$for(p in nl.pins())\
-    block_fall[$(p.fullName())] = 0
-$endfor\
 $for(p in nl.pins())\
     s_$(p.fullName()) = $(p.init)
 $endfor\

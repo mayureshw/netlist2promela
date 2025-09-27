@@ -44,7 +44,7 @@ inline wait( id,val ) {
 $if( len(nl.applycons) > 0 )\
     if
 $for( p,c in nl.applycons )\
-    :: ( id == $(p) ) -> ( $(c) )
+    :: ( id == $(p) ) -> { ( $(c) ) -> skip }
 $endfor\
     :: else -> skip
     fi

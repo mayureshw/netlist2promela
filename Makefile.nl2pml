@@ -37,6 +37,7 @@ $1/$1.report:	$1/$1.pan.out
 	cd $1 && ./$1.pan.out -m$(MAXDEPTH) -av | tee $1.report
 	@echo NOTE Use $1.pan.out -r for detailed trace
 	@echo NOTE Use spin -t $1.pml to analyze trace
+	@echo "NOTE Add -DNP to CLAGS and run with -rl for deadlocks (non progress cycles)"
 	@echo NOTE Use lbltrace.sh to label states in a trace file
 	@echo NOTE Do check forks listeed at the bottom of $1.pml for need of constraints
 

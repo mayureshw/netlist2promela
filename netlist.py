@@ -15,6 +15,7 @@ class Pin:
         return pinst
     def isfork(self): return len(self.drives) > 1
     def fullName(self): return '_'.join([self.instname,self.name])
+    def sname(self): return 's_' + self.fullName()
     def __init__(self,name,direction,nl):
         self.instname,self.name = name.split('.')
         inst = nl.getInst(self.instname)
@@ -74,7 +75,7 @@ class Prop:
         selector = ( lambda p : p.fullName() in selectpins ) if selectpins else ( lambda p : True )
         pins = [ p for p in self.nl.pins() if selector(p) ]
         return ' || '.join(
-            '( <> [] ' + p.fullName() + ' ) || ( <> [] !' + p.fullName() + ' )'
+            '( <> [] ' + p.sname() + ' ) || ( <> [] !' + p.sname() + ' )'
             for p in pins )
     def applycons(self): return self.propspec.get('applycons',[])
     def __init__(self,nl,propspec):

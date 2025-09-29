@@ -23,6 +23,7 @@ class Pin:
     def fullName(self): return '_'.join([self.instname,self.name])
     def sname(self): return 's_' + self.fullName()
     def __init__(self,name,direction,nl):
+        self.keyname = name
         self.instname,self.name = name.split('.')
         inst = nl.getInst(self.instname)
         inst.registerPin(self.name,direction,self)
@@ -81,10 +82,11 @@ class Prop:
             print('No value set in locks constraint')
             sys.exit(1)
         val = self.propspec['value']
-        selectpins = set( self.propspec.get('selectpins',[]) )
-        selector = ( lambda p : p.fullName() in selectpins ) if selectpins else ( lambda p : True )
-        droppins = set( self.propspec.get('droppins',[]) )
-        pins = [ p for p in self.nl.pins() if selector(p) and not p.fullName() in droppins ]
+        selectpin_names = self.propspec.get('selectpins',[])
+        selectpins = Pin.pins.values() if selectpin_names == [] else {
+            Pin.getNocreate(sn) for sn in selectpin_names }
+        droppin_names = set( self.propspec.get('droppins',[]) )
+        pins = [ p for p in selectpins if p.fullName not in droppin_names ]
         return ' || '.join(
             '( <> [] ' + ( '!' if val == 0 else '' ) + p.sname() + ' )'
             for p in pins )
@@ -141,6 +143,7 @@ class Netlist:
             if p not in Pin.pins:
                 print('Unknown pin in init spec',p,file=sys.stderr)
     def forks(self): return [ p for p in Pin.pins.values() if p.isfork() ]
+    def constraint_name2pin(self,tup): return ( Pin.getNocreate(tup[0]), tup[1] )
     def __init__(self,gatesjson,modelfile,propfile):
         modelspec = json.load( open(modelfile) )
         self.__dict__.update(modelspec)
@@ -158,4 +161,4 @@ class Netlist:
         for acons in self.prop.applycons() :
             if acons not in self.constraints:
                 print('Unknown constraint',acons)
-            else: self.applycons.append(tuple(self.constraints[acons]))
+            else: self.applycons.append(self.constraint_name2pin(self.constraints[acons]))

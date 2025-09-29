@@ -2,6 +2,7 @@ import subprocess
 import sys
 import json
 from collections import Counter
+from string import Template
 from gates import Gates
 
 class Pin:
@@ -13,6 +14,11 @@ class Pin:
         pinst = Pin(name,direction,nl)
         cls.pins[name] = pinst
         return pinst
+    @classmethod
+    def getNocreate(cls,name):
+        if name in cls.pins: return cls.pins[name]
+        print('No such pin',name)
+        sys.exit(1)
     def isfork(self): return len(self.drives) > 1
     def fullName(self): return '_'.join([self.instname,self.name])
     def sname(self): return 's_' + self.fullName()
@@ -70,13 +76,40 @@ class Prop:
             sys.exit(1)
         return handler()
     def handle_ltl(self): return self.propspec['ltl']
-    def handle_alllive(self):
+    def handle_locks(self):
+        if 'value' not in self.propspec:
+            print('No value set in locks constraint')
+            sys.exit(1)
+        val = self.propspec['value']
         selectpins = set( self.propspec.get('selectpins',[]) )
         selector = ( lambda p : p.fullName() in selectpins ) if selectpins else ( lambda p : True )
-        pins = [ p for p in self.nl.pins() if selector(p) ]
+        droppins = set( self.propspec.get('droppins',[]) )
+        pins = [ p for p in self.nl.pins() if selector(p) and not p.fullName() in droppins ]
         return ' || '.join(
-            '( <> [] ' + p.sname() + ' ) || ( <> [] !' + p.sname() + ' )'
+            '( <> [] ' + ( '!' if val == 0 else '' ) + p.sname() + ' )'
             for p in pins )
+    def alternateFormula(self,p1,p2): return Template(
+        '[] (' + ' && '.join([
+            '( $a -> ($a U $b) )',
+            '( !$a -> (!$a U !$b) )',
+            '( $b -> ($b U !$a) )',
+            '( !$b -> (!$b U $a) )'
+            ]) + ' )'
+        ).substitute(
+            a = Pin.getNocreate(p1).sname(),
+            b = Pin.getNocreate(p2).sname()
+            )
+
+    def handle_alternate(self):
+        alternates = self.propspec.get('alternate',None)
+        if alternates == None:
+            print("No 'alternate' property found in",self.propspec)
+            sys.exit(1)
+        return ' && '.join(
+            self.alternateFormula(p1,p2)
+            for p1,p2 in alternates
+            )
+
     def applycons(self): return self.propspec.get('applycons',[])
     def __init__(self,nl,propspec):
         if 'type' not in propspec:

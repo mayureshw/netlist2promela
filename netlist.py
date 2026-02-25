@@ -77,19 +77,20 @@ class Prop:
             sys.exit(1)
         return handler()
     def handle_ltl(self): return self.propspec['ltl']
+    def handle_lock_val(self,pins,val):
+        return ' || '.join(
+            '( <> [] ' + ( '!' if val == 0 else '' ) + p.sname() + ' )'
+            for p in pins )
+    def handle_lock_either(self,pins):
+        return ' || '.join( self.handle_lock_val(pins,v) for v in [0,1] )
     def handle_locks(self):
-        if 'value' not in self.propspec:
-            print('No value set in locks constraint')
-            sys.exit(1)
-        val = self.propspec['value']
         selectpin_names = self.propspec.get('selectpins',[])
         selectpins = Pin.pins.values() if selectpin_names == [] else {
             Pin.getNocreate(sn) for sn in selectpin_names }
         droppin_names = set( self.propspec.get('droppins',[]) )
         pins = [ p for p in selectpins if p.fullName not in droppin_names ]
-        return ' || '.join(
-            '( <> [] ' + ( '!' if val == 0 else '' ) + p.sname() + ' )'
-            for p in pins )
+        return self.handle_lock_val( pins, self.propspec['value'] ) \
+            if 'value' in self.propspec else self.handle_lock_either(pins)
     def alternateFormula(self,p1,p2): return Template(
         '[] (' + ' && '.join([
             '( $a -> ($a U $b) )',

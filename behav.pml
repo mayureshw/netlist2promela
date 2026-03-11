@@ -40,7 +40,7 @@ proctype g_latchrn_3_1( byte d, g, rn, q; bool d_init, g_init, rn_init, q_init )
                     last_g = state[g]
                     last_rn = state[rn]
                 }
-        :: state[rn] && state[g] ->
+        :: ( state[rn] && state[g] ) ->
                 atomic {
                     setState(q,state[d])
                     last_d = state[d]

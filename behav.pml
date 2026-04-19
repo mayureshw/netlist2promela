@@ -9,11 +9,11 @@ inline setState( id, val ) {
 // as it leads to a false livelock detection by spin, leading to early
 // inference of acceptance cycles.
 
-proctype g_latch_2_1( byte d, g, q; bool d_init, g_init, q_init )
+proctype g_latch_2_1( byte d, g, q, d_init, g_init, q_init )
 {
     assert( ( g_init == 0 ) || ( d_init == q_init ) )
-    bool last_d = d_init
-    bool last_g = g_init
+    byte last_d = d_init
+    byte last_g = g_init
     do
     :: ( ( ( state[d] != last_d ) || ( state[g] != last_g ) ) && state[g] ) ->
         atomic {
@@ -24,12 +24,12 @@ proctype g_latch_2_1( byte d, g, q; bool d_init, g_init, q_init )
     od
 }
 
-proctype g_latchrn_3_1( byte d, g, rn, q; bool d_init, g_init, rn_init, q_init )
+proctype g_latchrn_3_1( byte d, g, rn, q, d_init, g_init, rn_init, q_init )
 {
     assert( !rn_init && !q_init || rn_init && (  !g_init || ( d_init == q_init ) ) )
-    bool last_d  = d_init
-    bool last_g  = g_init
-    bool last_rn = rn_init
+    byte last_d  = d_init
+    byte last_g  = g_init
+    byte last_rn = rn_init
     do
     :: ( ( state[d] != last_d ) || ( state[g] != last_g ) || ( state[rn] != last_rn ) ) ->
         if
@@ -52,10 +52,10 @@ proctype g_latchrn_3_1( byte d, g, rn, q; bool d_init, g_init, rn_init, q_init )
     od
 }
 
-proctype g_not_1_1( byte i, o; bool i_init, o_init )
+proctype g_not_1_1( byte i, o, i_init, o_init )
 {
     assert( i_init != o_init )
-    bool last_i = i_init
+    byte last_i = i_init
     do
     :: state[i] != last_i ->
         atomic {
@@ -65,11 +65,11 @@ proctype g_not_1_1( byte i, o; bool i_init, o_init )
     od
 }
 
-proctype g_mullerc_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
+proctype g_mullerc_2_1( byte i0, i1, o, i0_init, i1_init, o_init )
 {
     assert( i0_init && i1_init || !o_init )
-    bool last_i0 = i0_init
-    bool last_i1 = i1_init
+    byte last_i0 = i0_init
+    byte last_i1 = i1_init
     do
     :: ( ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ) && ( state[i0] == state[i1] ) ->
         atomic {
@@ -80,11 +80,11 @@ proctype g_mullerc_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
     od
 }
 
-proctype g_xor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
+proctype g_xor_2_1( byte i0, i1, o, i0_init, i1_init, o_init )
 {
     assert( o_init == ( i0_init ^ i1_init ) )
-    bool last_i0 = i0_init
-    bool last_i1 = i1_init
+    byte last_i0 = i0_init
+    byte last_i1 = i1_init
     do
     :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
         atomic {
@@ -95,11 +95,11 @@ proctype g_xor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
     od
 }
 
-proctype g_xnor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
+proctype g_xnor_2_1( byte i0, i1, o, i0_init, i1_init, o_init )
 {
     assert( o_init == !( i0_init ^ i1_init ) )
-    bool last_i0 = i0_init
-    bool last_i1 = i1_init
+    byte last_i0 = i0_init
+    byte last_i1 = i1_init
     do
     :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
         atomic {
@@ -110,11 +110,11 @@ proctype g_xnor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
     od
 }
 
-proctype g_or_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
+proctype g_or_2_1( byte i0, i1, o, i0_init, i1_init, o_init )
 {
     assert( o_init == ( i0_init || i1_init ) )
-    bool last_i0 = i0_init
-    bool last_i1 = i1_init
+    byte last_i0 = i0_init
+    byte last_i1 = i1_init
     do
     :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
         atomic {
@@ -125,11 +125,11 @@ proctype g_or_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
     od
 }
 
-proctype g_nor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
+proctype g_nor_2_1( byte i0, i1, o, i0_init, i1_init, o_init )
 {
     assert( o_init == !( i0_init || i1_init ) )
-    bool last_i0 = i0_init
-    bool last_i1 = i1_init
+    byte last_i0 = i0_init
+    byte last_i1 = i1_init
     do
     :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
         atomic {
@@ -140,11 +140,11 @@ proctype g_nor_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
     od
 }
 
-proctype g_and_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
+proctype g_and_2_1( byte i0, i1, o, i0_init, i1_init, o_init )
 {
     assert( o_init == ( i0_init && i1_init ) )
-    bool last_i0 = i0_init
-    bool last_i1 = i1_init
+    byte last_i0 = i0_init
+    byte last_i1 = i1_init
     do
     :: ( state[i0] != last_i0 ) || ( state[i1] != last_i1 ) ->
         atomic {
@@ -155,10 +155,10 @@ proctype g_and_2_1( byte i0, i1, o; bool i0_init, i1_init, o_init )
     od
 }
 
-proctype wire( byte to, from; bool to_init, from_init )
+proctype wire( byte to, from, to_init, from_init )
 {
     assert( to_init == from_init )
-    bool last_from = from_init
+    byte last_from = from_init
     do
     :: ( state[from] != last_from ) ->
         wait(to,state[from])

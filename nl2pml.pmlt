@@ -10,7 +10,7 @@ nl = Netlist(gatesjson,modelfile,propfile)
 behavpml = nl2pmldir + '/behav.pml'
 )\
 #define N_STATES $(nl.nStates())
-bool state[N_STATES]
+byte state[N_STATES]
 
 $for(p in nl.pins())\
 #define $(p.fullName()) $(p.id)

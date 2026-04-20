@@ -113,6 +113,26 @@ class Prop:
             for p1,p2 in alternates
             )
 
+    def iholdsFormula(self,a,b,c): return Template(
+        '[] (' + ' && '.join([
+            '( $a -> ($c U $b) )',
+            '( !$a -> ($c U !$b) )'
+            ]) + ' )'
+        ).substitute(
+            a = Pin.getNocreate(a).sname(),
+            b = Pin.getNocreate(b).sname(),
+            c = c # symbolic condition, if it's pin we have to check for '.' in it
+            )
+
+    def handle_intervalHolds(self):
+        iholds = self.propspec.get('intervalHolds',None)
+        if iholds == None:
+            print("No 'intervalHolds' property found in",self.propspec)
+            sys.exit(1)
+        return ' && '.join(
+            self.iholdsFormula(a,b,c)
+            for a,b,c in iholds
+            )
     def applycons(self): return self.propspec.get('applycons',[])
     def __init__(self,nl,propspec):
         if 'type' not in propspec:

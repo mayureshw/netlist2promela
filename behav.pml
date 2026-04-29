@@ -52,6 +52,19 @@ proctype g_latchrn_3_1( byte d, g, rn, q, d_init, g_init, rn_init, q_init )
     od
 }
 
+proctype g_buf_1_1( byte i, o, i_init, o_init )
+{
+    assert( i_init == o_init )
+    byte last_i = i_init
+    do
+    :: state[i] != last_i ->
+        atomic {
+            setState(o,state[i])
+            last_i = state[i]
+        }
+    od
+}
+
 proctype g_not_1_1( byte i, o, i_init, o_init )
 {
     assert( i_init != o_init )

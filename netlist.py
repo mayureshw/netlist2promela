@@ -134,6 +134,7 @@ class Prop:
             for a,b,c in iholds
             )
     def applycons(self): return self.propspec.get('applycons',[])
+    def defines(self): return self.propspec.get('defines',[])
     def __init__(self,nl,propspec):
         if 'type' not in propspec:
             print('No property type specified in',propspec)
@@ -153,6 +154,7 @@ class Netlist:
     def maxOps(self): return max( len(inst.opins) for inst in self._insts.values() )
     def nonEnvInsts(self): return [ inst for inst in self._insts.values() if inst.name != 'i_env']
     def pins(self): return Pin.pins.values()
+    def defines(self): return self.prop.defines()
     def validateAndSetInit(self):
         for n,p in Pin.pins.items():
             if n not in self.init:

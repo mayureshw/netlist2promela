@@ -9,6 +9,10 @@ gates = Gates( nl2pmldir + '/gates.json' )
 nl = Netlist(gatesjson,modelfile,propfile)
 behavpml = nl2pmldir + '/behav.pml'
 )\
+$for(d in nl.defines())\
+#define $(d)
+$endfor\
+
 #define N_STATES $(nl.nStates())
 byte state[N_STATES]
 

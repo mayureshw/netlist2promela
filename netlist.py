@@ -134,6 +134,7 @@ class Prop:
             for a,b,c in iholds
             )
     def applycons(self): return self.propspec.get('applycons',[])
+    def init(self): return self.propspec.get('init',{})
     def defines(self): return self.propspec.get('defines',[])
     def __init__(self,nl,propspec):
         if 'type' not in propspec:
@@ -156,13 +157,14 @@ class Netlist:
     def pins(self): return Pin.pins.values()
     def defines(self): return self.prop.defines()
     def validateAndSetInit(self):
+        effinit = { **self.init, **self.prop.init() }
         for n,p in Pin.pins.items():
-            if n not in self.init:
+            if n not in effinit:
                 p.init = 0
                 print('init value defaulted to 0 for pin',n,file=sys.stderr)
             else:
-                p.init = self.init[n]
-        for p in self.init:
+                p.init = effinit[n]
+        for p in effinit:
             if p not in Pin.pins:
                 print('Unknown pin in init spec',p,file=sys.stderr)
     def forks(self): return [ p for p in Pin.pins.values() if p.isfork() ]
